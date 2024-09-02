@@ -6,150 +6,66 @@
     <title>Caso 1: Recta</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
-    <style>
-        body {
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        canvas {
-            margin-top: 20px;
-        }
-        table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
-            text-align: center;
-        }
-    </style>
+    <link rel="stylesheet" href="../static/home.css">
 </head>
 <body>
-    <div class="container">
+    <div id="form-container" class="form-container">
         <h1>Caso 1: Recta</h1>
         <p>Equipo: Dinamita</p>
-        <form id="formulario">
-            <label for="x0">Coordenada x0:</label>
-            <input type="number" id="x0" name="x0" required>
-            <label for="y0">Coordenada y0:</label>
-            <input type="number" id="y0" name="y0" required>
-            <label for="x1">Coordenada x1:</label>
-            <input type="number" id="x1" name="x1" required>
-            <label for="y1">Coordenada y1:</label>
-            <input type="number" id="y1" name="y1" required>
-            <button type="submit">Calcular</button>
+        <form id="formulario" class="form">
+            <div id="form-group-x0" class="form-group">
+                <label for="x0">Coordenada x0:</label>
+                <input type="number" id="x0" name="x0" required>
+            </div>
+            <div id="form-group-y0" class="form-group">
+                <label for="y0">Coordenada y0:</label>
+                <input type="number" id="y0" name="y0" required>
+            </div>
+            <div id="form-group-x1" class="form-group">
+                <label for="x1">Coordenada x1:</label>
+                <input type="number" id="x1" name="x1" required>
+            </div>
+            <div id="form-group-y1" class="form-group">
+                <label for="y1">Coordenada y1:</label>
+                <input type="number" id="y1" name="y1" required>
+            </div>
+            <button class="button" type="submit">Calcular</button>
+            <div id="loading" class="wheel-and-hamster" style="display: none;">
+                <div class="wheel"></div>
+                <div class="hamster">
+                    <div class="hamster__body">
+                        <div class="hamster__head">
+                            <div class="hamster__ear"></div>
+                            <div class="hamster__eye"></div>
+                            <div class="hamster__nose"></div>
+                        </div>
+                        <div class="hamster__limb hamster__limb--fr"></div>
+                        <div class="hamster__limb hamster__limb--fl"></div>
+                        <div class="hamster__limb hamster__limb--br"></div>
+                        <div class="hamster__limb hamster__limb--bl"></div>
+                        <div class="hamster__tail"></div>
+                    </div>
+                </div>
+                <div class="spoke"></div>
+            </div>
+            <canvas id="grafica"></canvas>
+            <table id="tabla-puntos">
+                <thead>
+                    <tr>
+                        <th>Iteración</th>
+                        <th>X</th>
+                        <th>Y</th>
+                        <th>Pendiente</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </form>
-        <canvas id="grafica"></canvas>
-        <table id="tabla-puntos">
-            <thead>
-                <tr>
-                    <th>Iteración</th>
-                    <th>X</th>
-                    <th>Y</th>
-                    <th>Pendiente</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
-    <script>
-        document.getElementById('formulario').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const x0 = document.getElementById('x0').value;
-            const y0 = document.getElementById('y0').value;
-            const x1 = document.getElementById('x1').value;
-            const y1 = document.getElementById('y1').value;
-
-            fetch('/calcular_puntos', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ x0, y0, x1, y1 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const puntos = data.puntos;
-                const pendiente = data.pendiente;
-                const ctx = document.getElementById('grafica').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: puntos.map((_, index) => index),
-                        datasets: [{
-                            label: 'Línea DDA',
-                            data: puntos.map(p => ({ x: p[0], y: p[1] })),
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 2,
-                            fill: false,
-                            pointRadius: 5,
-                            pointHoverRadius: 7,
-                            pointBackgroundColor: 'rgba(75, 192, 192, 1)',
-                            pointHoverBackgroundColor: 'rgba(255, 99, 132, 1)',
-                            pointHoverBorderColor: 'rgba(255, 99, 132, 1)',
-                            pointHoverBorderWidth: 2,
-                            pointStyle: 'circle'
-                        }]
-                    },
-                    options: {
-                        plugins: {
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return `Punto (${context.raw.x.toFixed(4)}, ${context.raw.y.toFixed(4)})`;
-                                    }
-                                }
-                            },
-                            zoom: {
-                                pan: {
-                                    enabled: true,
-                                    mode: 'xy'
-                                },
-                                zoom: {
-                                    wheel: {
-                                        enabled: true
-                                    },
-                                    pinch: {
-                                        enabled: true
-                                    },
-                                    mode: 'xy'
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                type: 'linear',
-                                position: 'bottom'
-                            }
-                        }
-                    }
-                });
-
-                const tbody = document.getElementById('tabla-puntos').getElementsByTagName('tbody')[0];
-                tbody.innerHTML = '';
-                puntos.forEach((punto, index) => {
-                    const row = tbody.insertRow();
-                    const cellIteracion = row.insertCell(0);
-                    const cellX = row.insertCell(1);
-                    const cellY = row.insertCell(2);
-                    const cellPendiente = row.insertCell(3);
-                    cellIteracion.textContent = index;
-                    cellX.textContent = punto[0].toFixed(4);
-                    cellY.textContent = punto[1].toFixed(4);
-                    cellPendiente.textContent = pendiente.toFixed(4);
-                });
-            });
-        });
-    </script>
+    <script src="../static/home.js"></script>
 </body>
 </html>
