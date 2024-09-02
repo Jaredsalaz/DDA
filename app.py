@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 import json
 from caso1 import algoritmo_dda_con_pendiente
+import webbrowser
+from threading import Timer
 
 app = Flask(__name__)
 
@@ -19,6 +21,10 @@ def calcular_puntos():
     puntos = algoritmo_dda_con_pendiente(x0, y0, x1, y1)
     return jsonify({'puntos': puntos, 'pendiente': round(pendiente, 4)})
 
+def open_browser():
+    webbrowser.open_new("http://127.0.0.1:5000")
+
 if __name__ == '__main__':
+    Timer(1, open_browser).start()
     app.run(debug=True, port=5000)
-    #flask run --debug
+    # flask run --debugg
