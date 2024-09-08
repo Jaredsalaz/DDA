@@ -41,10 +41,14 @@ def determinar_caso(x0, y0, x1, y1):
         else:
             return "Pendiente positiva mayor que 1 (m > 1), de derecha a izquierda y de arriba hacia abajo"
     elif m < -1:
-        if x1 > x0:
+        if x1 > x0 and y1 > y0:
             return "Pendiente negativa menor que -1 (m < -1), de izquierda a derecha y de abajo hacia arriba"
-        else:
+        elif x1 < x0 and y1 < y0:
             return "Pendiente negativa menor que -1 (m < -1), de derecha a izquierda y de arriba hacia abajo"
+        elif x1 > x0 and y1 < y0:
+            return "Pendiente negativa menor que -1 (m < -1), de izquierda a derecha y de arriba hacia abajo"
+        elif x1 < x0 and y1 > y0:
+            return "Pendiente negativa menor que -1 (m < -1), de derecha a izquierda y de abajo hacia arriba"
     elif -1 < m < 0:
         if x1 > x0:
             return "Pendiente negativa mayor que -1 (-1 < m < 0), de izquierda a derecha y de arriba hacia abajo"
