@@ -152,6 +152,7 @@ table {
     margin-top: 20px;
     border-collapse: collapse;
     animation: fadeIn 1s ease-in-out;
+    color: #fff;
 }
 
 table, th, td {

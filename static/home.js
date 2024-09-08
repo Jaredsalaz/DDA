@@ -5,6 +5,14 @@ document.getElementById('formulario').addEventListener('submit', function(event)
     const x1 = document.getElementById('x1').value;
     const y1 = document.getElementById('y1').value;
 
+    // Reproducir sonido
+    const audio = document.getElementById('audio-siiuuu');
+    audio.play().then(() => {
+        console.log('Audio reproducido correctamente');
+    }).catch(error => {
+        console.error('Error al reproducir el audio:', error);
+    });
+
     // Mostrar animación de carga
     document.getElementById('loading').style.display = 'block';
 
@@ -21,7 +29,13 @@ document.getElementById('formulario').addEventListener('submit', function(event)
         const pendiente = data.pendiente;
         const caso = data.caso; // Nuevo campo para el caso determinado
         const ctx = document.getElementById('grafica').getContext('2d');
-        new Chart(ctx, {
+
+        // Destruir cualquier instancia previa de Chart.js
+        if (window.myChart) {
+            window.myChart.destroy();
+        }
+
+        window.myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: puntos.map((_, index) => index),

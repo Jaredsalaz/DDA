@@ -10,7 +10,7 @@
 </head>
 <body>
     <div id="form-container" class="form-container">
-        <h1>Metodo DDA</h1>
+        <h1>Método DDA - Equipo Dinamita</h1>
         <p>Equipo: Dinamita</p>
         <form id="formulario" class="form">
             <div id="form-group-x0" class="form-group">
@@ -49,22 +49,22 @@
             </div>
             <div class="spoke"></div>
         </div>
-        <canvas id="grafica"></canvas>
+        <canvas id="grafica" width="300" height="300"></canvas>
+        <p id="caso-determinado"></p> <!-- Elemento para mostrar el caso determinado -->
+        <table id="tabla-puntos">
+            <thead>
+                <tr>
+                    <th>Iteración</th>
+                    <th>X</th>
+                    <th>Y</th>
+                    <th>Pendiente</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <audio id="audio-siiuuu" src="../CR7-Siuuu.mp3"></audio> <!-- Elemento de audio -->
     </div>
-    
-    <table id="tabla-puntos">
-        <thead>
-            <tr>
-                <th>Iteración</th>
-                <th>X</th>
-                <th>Y</th>
-                <th>Pendiente</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-    <p id="caso-determinado"></p> <!-- Elemento para mostrar el caso determinado -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
     <script src="../static/home.js"></script>
