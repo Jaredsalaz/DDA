@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caso 1: Recta</title>
+    <title>DDA</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
     <link rel="stylesheet" href="../static/home.css">
 </head>
 <body>
     <div id="form-container" class="form-container">
-        <h1>Caso 1: Recta</h1>
+        <h1>Metodo DDA</h1>
         <p>Equipo: Dinamita</p>
         <form id="formulario" class="form">
             <div id="form-group-x0" class="form-group">
@@ -29,41 +29,42 @@
                 <label for="y1">Coordenada y1:</label>
                 <input type="number" id="y1" name="y1" required>
             </div>
-            <button class="button" type="submit">Calcular</button>
-            <div id="loading" class="wheel-and-hamster" style="display: none;">
-                <div class="wheel"></div>
-                <div class="hamster">
-                    <div class="hamster__body">
-                        <div class="hamster__head">
-                            <div class="hamster__ear"></div>
-                            <div class="hamster__eye"></div>
-                            <div class="hamster__nose"></div>
-                        </div>
-                        <div class="hamster__limb hamster__limb--fr"></div>
-                        <div class="hamster__limb hamster__limb--fl"></div>
-                        <div class="hamster__limb hamster__limb--br"></div>
-                        <div class="hamster__limb hamster__limb--bl"></div>
-                        <div class="hamster__tail"></div>
-                    </div>
-                </div>
-                <div class="spoke"></div>
-            </div>
-            <canvas id="grafica"></canvas>
-            <table id="tabla-puntos">
-                <thead>
-                    <tr>
-                        <th>Iteración</th>
-                        <th>X</th>
-                        <th>Y</th>
-                        <th>Pendiente</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+            <button id="form-submit-btn" class="form-submit-btn" type="submit">Calcular</button>
         </form>
+        <div id="loading" class="wheel-and-hamster" style="display: none;">
+            <div class="wheel"></div>
+            <div class="hamster">
+                <div class="hamster__body">
+                    <div class="hamster__head">
+                        <div class="hamster__ear"></div>
+                        <div class="hamster__eye"></div>
+                        <div class="hamster__nose"></div>
+                    </div>
+                    <div class="hamster__limb hamster__limb--fr"></div>
+                    <div class="hamster__limb hamster__limb--fl"></div>
+                    <div class="hamster__limb hamster__limb--br"></div>
+                    <div class="hamster__limb hamster__limb--bl"></div>
+                    <div class="hamster__tail"></div>
+                </div>
+            </div>
+            <div class="spoke"></div>
+        </div>
+        <canvas id="grafica"></canvas>
     </div>
-
+    
+    <table id="tabla-puntos">
+        <thead>
+            <tr>
+                <th>Iteración</th>
+                <th>X</th>
+                <th>Y</th>
+                <th>Pendiente</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <p id="caso-determinado"></p> <!-- Elemento para mostrar el caso determinado -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
     <script src="../static/home.js"></script>

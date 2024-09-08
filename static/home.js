@@ -19,6 +19,7 @@ document.getElementById('formulario').addEventListener('submit', function(event)
     .then(data => {
         const puntos = data.puntos;
         const pendiente = data.pendiente;
+        const caso = data.caso; // Nuevo campo para el caso determinado
         const ctx = document.getElementById('grafica').getContext('2d');
         new Chart(ctx, {
             type: 'line',
@@ -93,6 +94,9 @@ document.getElementById('formulario').addEventListener('submit', function(event)
             cellY.textContent = punto[1].toFixed(4);
             cellPendiente.textContent = pendiente.toFixed(4);
         });
+
+        // Mostrar el caso determinado
+        document.getElementById('caso-determinado').textContent = `Caso: ${caso}`;
     })
     .catch(error => {
         console.error('Error:', error);
