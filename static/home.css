@@ -10,6 +10,7 @@ body {
     background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
         linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
     background-size: 55px 55px;
+    z-index: 1001;
 }
 
 .form-container {
@@ -27,6 +28,8 @@ body {
     gap: 20px;
     box-sizing: border-box;
     border-radius: 16px;
+    z-index: 1001;
+    position: relative;
   }
   
   .form-container button:active {
@@ -70,6 +73,111 @@ body {
     font-weight: 600;
     margin-bottom: 16px;
   }
+/* Estilos para las cortinas */
+.curtain {
+    position: fixed;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background-color: #000;
+    z-index: 1000;
+    animation: curtainOpen 2s forwards;
+    background-image: linear-gradient(to bottom, #000, #333);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    pointer-events: none; /* Asegúrate de que las cortinas no interfieran con los eventos del ratón */
+}
+
+#curtain-left {
+    left: 0;
+    animation-delay: 1s;
+}
+
+#curtain-right {
+    right: 0;
+    animation-delay: 1s;
+}
+
+@keyframes curtainOpen {
+    0% {
+        width: 50%;
+    }
+    100% {
+        width: 0;
+    }
+}
+
+
+/* Animación de bienvenida */
+.welcome-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    color: #e81cff;
+    font-size: 24px;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    animation: fadeOut 1s forwards;
+    animation-delay: 2s;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Animaciones de rebote para los elementos del formulario */
+@keyframes bounceIn {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-30px);
+    }
+    60% {
+        transform: translateY(-15px);
+    }
+}
+
+.form-group, .form-submit-btn {
+    animation: bounceIn 1s;
+    animation-fill-mode: both;
+    opacity: 0;
+}
+
+.form-group {
+    animation-delay: 3s;
+}
+
+.form-submit-btn {
+    animation-delay: 3.5s;
+}
+
+#loading {
+    animation-delay: 4s;
+}
+
+#grafica {
+    animation-delay: 4.5s;
+}
+
+#caso-determinado {
+    animation-delay: 5s;
+}
+
+#tabla-puntos {
+    animation-delay: 5.5s;
+}
   .form-container p {
     color: #e81cff;
     font-size: 16px;
@@ -89,30 +197,6 @@ body {
   .form-container .form-group textarea:focus {
     outline: none;
     border-color: #e81cff;
-  }
-  
-  .form-container .form-submit-btn {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    align-self: flex-start;
-    font-family: inherit;
-    color: #717171;
-    font-weight: 600;
-    width: 40%;
-    background: #313131;
-    border: 1px solid #414141;
-    padding: 12px 16px;
-    font-size: inherit;
-    gap: 8px;
-    margin-top: 8px;
-    cursor: pointer;
-    border-radius: 6px;
-  }
-  
-  .form-container .form-submit-btn:hover {
-    background-color: #fff;
-    border-color: #fff;
   }
     
 h1 {
@@ -187,7 +271,8 @@ tr:hover {
     }
 }
 /*Boton */ 
-.button {
+/*Boton */ 
+.form-submit-btn {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -209,8 +294,8 @@ tr:hover {
     user-select: none;
     /* Add gradient shading to each side */
     background-image: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)),
-      linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
-    background-position: bottom right, bottom right;
+      linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)); /* Changed bottom to top */
+    background-position: top right, top right; /* Changed bottom to top */
     background-size: 100% 100%, 100% 100%;
     background-repeat: no-repeat;
     box-shadow: inset -4px -10px 0px rgba(255, 255, 255, 0.4),
@@ -220,18 +305,18 @@ tr:hover {
     transform: perspective(70px) rotateX(5deg) rotateY(0deg);
   }
   
-  .button span {
+  .form-submit-btn span {
     transform: translateY(-10px);
   }
   
-  .button::after {
+  .form-submit-btn::after {
     content: '';
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.5));
+    background-image: linear-gradient(to top, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.5)); /* Changed bottom to top */
     z-index: -1;
     border-radius: 15px;
     box-shadow: inset 4px 0px 0px rgba(255, 255, 255, 0.1),
@@ -239,7 +324,7 @@ tr:hover {
     transition: all .1s ease-in-out 0s;
   }
   
-  .button::before {
+  .form-submit-btn::before {
     content: '';
     position: absolute;
     top: 0;
@@ -247,8 +332,8 @@ tr:hover {
     left: 0;
     right: 0;
     background-image: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)),
-      linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
-    background-position: bottom right, bottom right;
+      linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)); /* Changed bottom to top */
+    background-position: top right, top right; /* Changed bottom to top */
     background-size: 100% 100%, 100% 100%;
     background-repeat: no-repeat;
     z-index: -1;
@@ -256,7 +341,7 @@ tr:hover {
     transition: all .1s ease-in-out 0s;
   }
   
-  .button:active {
+  .form-submit-btn:active {
     will-change: transform;
     transform: perspective(80px) rotateX(5deg) rotateY(1deg) translateY(3px) scale(0.96);
     height: 64px;
@@ -268,11 +353,11 @@ tr:hover {
     transition: all .1s ease-in-out 0s;
   }
   
-  .button::after:active {
-    background-image: linear-gradient(to bottom,rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2));
+  .form-submit-btn::after:active {
+    background-image: linear-gradient(to top,rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)); /* Changed bottom to top */
   }
   
-  .button:active::before {
+  .form-submit-btn:active::before {
     content: "";
     display: block;
     position: absolute;
@@ -285,7 +370,7 @@ tr:hover {
     pointer-events: none;
   }
   
-  .button svg {
+  .form-submit-btn svg {
     width: 15px;
     height: 15px;
   }
@@ -300,7 +385,7 @@ tr:hover {
     }
   }
   
-  .button:focus {
+  .form-submit-btn:focus {
     outline: none;
   }
 /* Animación de carga */

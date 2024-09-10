@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import json
-from caso1 import algoritmo_dda_con_pendiente, determinar_caso
+from algoritmo import algoritmo_dda_con_pendiente, determinar_caso
 import webbrowser
 from threading import Timer
 
@@ -26,6 +26,10 @@ def open_browser():
     webbrowser.open_new("http://127.0.0.1:5000")
 
 if __name__ == '__main__':
+    # Desactiva el reinicio automático del servidor de Flask
+    app.config['TEMPLATES_AUTO_RELOAD'] = False
+    app.config['DEBUG'] = False
+    
+    # Asegúrate de que el navegador solo se abra una vez
     Timer(1, open_browser).start()
-    app.run(debug=True, port=5000)
-    # flask run --debug
+    app.run(port=5000)
