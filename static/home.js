@@ -1,3 +1,24 @@
+
+//boton de limpiar 
+document.getElementById('clear-button').addEventListener('click', function() {
+    // Limpiar los campos del formulario
+    document.getElementById('formulario').reset();
+
+    // Limpiar la gráfica
+    if (window.myChart) {
+        window.myChart.destroy();
+        window.myChart = null;
+    }
+
+    // Limpiar la tabla
+    const tbody = document.getElementById('tabla-puntos').getElementsByTagName('tbody')[0];
+    tbody.innerHTML = '';
+
+    // Limpiar el texto del caso determinado
+    document.getElementById('caso-determinado').textContent = '';
+});
+
+//animaciones de las cortinas de bienvenida
 document.addEventListener('DOMContentLoaded', function() {
     const curtainLeft = document.getElementById('curtain-left');
     const curtainRight = document.getElementById('curtain-right');
@@ -42,7 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 2000); // Espera a que termine la animación de las cortinas
     }, 3000); // Duración de la animación de bienvenida
 });
-
 
 // Añade un evento 'submit' al formulario con id 'formulario'
 document.getElementById('formulario').addEventListener('submit', function(event) {
@@ -92,14 +112,14 @@ document.getElementById('formulario').addEventListener('submit', function(event)
 
         // Crea una nueva gráfica con los puntos calculados
         window.myChart = new Chart(ctx, {
-            type: 'line',
+            type: 'scatter', // Cambia el tipo a 'scatter' para manejar mejor los puntos individuales
             data: {
-                labels: puntos.map((_, index) => index), // Etiquetas para el eje x
                 datasets: [{
                     label: 'Línea DDA',
                     data: puntos.map(p => ({ x: p[0], y: p[1] })), // Datos de los puntos
                     borderColor: 'rgba(75, 192, 192, 1)', // Color de la línea
                     borderWidth: 2, // Ancho de la línea
+                    showLine: true, // Mostrar la línea entre los puntos
                     fill: false, // No rellenar debajo de la línea
                     pointRadius: 5, // Radio de los puntos
                     pointHoverRadius: 7, // Radio de los puntos al pasar el ratón
@@ -127,7 +147,7 @@ document.getElementById('formulario').addEventListener('submit', function(event)
                         },
                         zoom: {
                             wheel: {
-                                enabled: true // Habilita el zoom con la rueda del ratón
+                                enabled: false // Habilita el zoom con la rueda del ratón
                             },
                             pinch: {
                                 enabled: true // Habilita el zoom con pellizco
@@ -140,6 +160,10 @@ document.getElementById('formulario').addEventListener('submit', function(event)
                     x: {
                         type: 'linear', // Tipo de escala lineal para el eje x
                         position: 'bottom' // Posición del eje x en la parte inferior
+                    },
+                    y: {
+                        type: 'linear', // Tipo de escala lineal para el eje y
+                        position: 'left' // Posición del eje y en la parte izquierda
                     }
                 },
                 animation: {
