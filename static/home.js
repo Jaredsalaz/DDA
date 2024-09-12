@@ -66,16 +66,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Añade un evento 'submit' al formulario con id 'formulario'
 document.getElementById('formulario').addEventListener('submit', function(event) {
-    // Previene el comportamiento por defecto del formulario (recargar la página)
     event.preventDefault();
 
-    // Obtiene los valores de los campos de entrada del formulario
-    const x0 = document.getElementById('x0').value;
-    const y0 = document.getElementById('y0').value;
-    const x1 = document.getElementById('x1').value;
-    const y1 = document.getElementById('y1').value;
+    const x0 = parseFloat(document.getElementById('x0').value);
+    const y0 = parseFloat(document.getElementById('y0').value);
+    const x1 = parseFloat(document.getElementById('x1').value);
+    const y1 = parseFloat(document.getElementById('y1').value);
 
-    // Reproduce un sonido al enviar el formulario
     const audio = document.getElementById('audio-siiuuu');
     audio.play().then(() => {
         console.log('Audio reproducido correctamente');
@@ -83,58 +80,57 @@ document.getElementById('formulario').addEventListener('submit', function(event)
         console.error('Error al reproducir el audio:', error);
     });
 
-    // Muestra una animación de carga
     document.getElementById('loading').style.display = 'block';
 
-    // Envía una solicitud POST al servidor para calcular los puntos
     fetch('/calcular_puntos', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ x0, y0, x1, y1 }) // Envía los valores como JSON
+        body: JSON.stringify({ x0, y0, x1, y1 })
     })
-    .then(response => response.json()) // Convierte la respuesta a JSON
+    .then(response => response.json())
     .then(data => {
-        // Oculta la animación de carga
         document.getElementById('loading').style.display = 'none';
 
-        // Procesa los datos recibidos
         const puntos = data.puntos;
-        const pendiente = data.pendiente;
-        const caso = data.caso; // Nuevo campo para el caso determinado
+        let pendiente = data.pendiente;
+        const caso = data.caso;
+
+        // Maneja el caso de pendiente infinita
+        if (pendiente === Infinity) {
+            pendiente = '∞';
+        }
+
         const ctx = document.getElementById('grafica').getContext('2d');
 
-        // Destruye cualquier instancia previa de Chart.js para evitar superposiciones
         if (window.myChart) {
             window.myChart.destroy();
         }
 
-        // Crea una nueva gráfica con los puntos calculados
         window.myChart = new Chart(ctx, {
-            type: 'scatter', // Cambia el tipo a 'scatter' para manejar mejor los puntos individuales
+            type: 'scatter',
             data: {
                 datasets: [{
                     label: 'Línea DDA',
-                    data: puntos.map(p => ({ x: p[0], y: p[1] })), // Datos de los puntos
-                    borderColor: 'rgba(75, 192, 192, 1)', // Color de la línea
-                    borderWidth: 2, // Ancho de la línea
-                    showLine: true, // Mostrar la línea entre los puntos
-                    fill: false, // No rellenar debajo de la línea
-                    pointRadius: 5, // Radio de los puntos
-                    pointHoverRadius: 7, // Radio de los puntos al pasar el ratón
-                    pointBackgroundColor: 'rgba(75, 192, 192, 1)', // Color de fondo de los puntos
-                    pointHoverBackgroundColor: 'rgba(255, 99, 132, 1)', // Color de fondo de los puntos al pasar el ratón
-                    pointHoverBorderColor: 'rgba(255, 99, 132, 1)', // Color del borde de los puntos al pasar el ratón
-                    pointHoverBorderWidth: 2, // Ancho del borde de los puntos al pasar el ratón
-                    pointStyle: 'circle' // Estilo de los puntos
+                    data: puntos.map(p => ({ x: p[0], y: p[1] })),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    showLine: true,
+                    fill: false,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                    pointHoverBackgroundColor: 'rgba(255, 99, 132, 1)',
+                    pointHoverBorderColor: 'rgba(255, 99, 132, 1)',
+                    pointHoverBorderWidth: 2,
+                    pointStyle: 'circle'
                 }]
             },
             options: {
                 plugins: {
                     tooltip: {
                         callbacks: {
-                            // Formato de la etiqueta del tooltip
                             label: function(context) {
                                 return `Punto (${context.raw.x.toFixed(4)}, ${context.raw.y.toFixed(4)})`;
                             }
@@ -142,61 +138,57 @@ document.getElementById('formulario').addEventListener('submit', function(event)
                     },
                     zoom: {
                         pan: {
-                            enabled: true, // Habilita el paneo
-                            mode: 'xy' // Paneo en ambas direcciones
+                            enabled: true,
+                            mode: 'xy'
                         },
                         zoom: {
                             wheel: {
-                                enabled: false // Habilita el zoom con la rueda del ratón
+                                enabled: false
                             },
                             pinch: {
-                                enabled: true // Habilita el zoom con pellizco
+                                enabled: true
                             },
-                            mode: 'xy' // Zoom en ambas direcciones
+                            mode: 'xy'
                         }
                     }
                 },
                 scales: {
                     x: {
-                        type: 'linear', // Tipo de escala lineal para el eje x
-                        position: 'bottom' // Posición del eje x en la parte inferior
+                        type: 'linear',
+                        position: 'bottom'
                     },
                     y: {
-                        type: 'linear', // Tipo de escala lineal para el eje y
-                        position: 'left' // Posición del eje y en la parte izquierda
+                        type: 'linear',
+                        position: 'left'
                     }
                 },
                 animation: {
                     onComplete: function() {
-                        // Oculta la animación de carga al completar la animación de la gráfica
                         document.getElementById('loading').style.display = 'none';
                     }
                 }
             }
         });
 
-        // Actualiza la tabla de puntos con los nuevos datos
         const tbody = document.getElementById('tabla-puntos').getElementsByTagName('tbody')[0];
-        tbody.innerHTML = ''; // Limpia el contenido previo de la tabla
+        tbody.innerHTML = '';
         puntos.forEach((punto, index) => {
-            const row = tbody.insertRow(); // Inserta una nueva fila
-            row.style.animation = 'fadeIn 0.5s ease-in-out'; // Añade una animación de entrada
-            const cellIteracion = row.insertCell(0); // Celda para el índice
-            const cellX = row.insertCell(1); // Celda para la coordenada x
-            const cellY = row.insertCell(2); // Celda para la coordenada y
-            const cellPendiente = row.insertCell(3); // Celda para la pendiente
-            cellIteracion.textContent = index; // Asigna el índice a la celda
-            cellX.textContent = punto[0].toFixed(4); // Asigna la coordenada x a la celda
-            cellY.textContent = punto[1].toFixed(4); // Asigna la coordenada y a la celda
-            cellPendiente.textContent = pendiente.toFixed(4); // Asigna la pendiente a la celda
+            const row = tbody.insertRow();
+            row.style.animation = 'fadeIn 0.5s ease-in-out';
+            const cellIteracion = row.insertCell(0);
+            const cellX = row.insertCell(1);
+            const cellY = row.insertCell(2);
+            const cellPendiente = row.insertCell(3);
+            cellIteracion.textContent = index;
+            cellX.textContent = punto[0].toFixed(4);
+            cellY.textContent = punto[1].toFixed(4);
+            cellPendiente.textContent = pendiente;
         });
 
-        // Muestra el caso determinado en el elemento con id 'caso-determinado'
         document.getElementById('caso-determinado').textContent = `Caso: ${caso}`;
     })
     .catch(error => {
         console.error('Error:', error);
-        // Oculta la animación de carga en caso de error
         document.getElementById('loading').style.display = 'none';
     });
 });

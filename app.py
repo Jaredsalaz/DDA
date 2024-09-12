@@ -33,19 +33,16 @@ def calcular_puntos():
     caso = determinar_caso(x0, y0, x1, y1)
     
     # Devuelve los puntos, la pendiente y el caso en formato JSON
-    return jsonify({'puntos': puntos, 'pendiente': round(pendiente, 4), 'caso': caso})
+    # Maneja el caso de pendiente infinita
+    pendiente_str = '∞' if pendiente == float('inf') else round(pendiente, 4)
+    
+    return jsonify({'puntos': puntos, 'pendiente': pendiente_str, 'caso': caso})
 
-# Función para abrir el navegador web automáticamente
+# Función para abrir el navegador automáticamente
 def open_browser():
-    webbrowser.open_new("http://127.0.0.1:5000")
+    webbrowser.open_new('http://127.0.0.1:5000/')
 
+# Inicia la aplicación Flask
 if __name__ == '__main__':
-    # Desactiva el reinicio automático del servidor de Flask
-    app.config['TEMPLATES_AUTO_RELOAD'] = False
-    app.config['DEBUG'] = False
-    
-    # Asegúrate de que el navegador solo se abra una vez
     Timer(1, open_browser).start()
-    
-    # Inicia la aplicación Flask en el puerto 5000
-    app.run(port=5000)
+    app.run(debug=True)
