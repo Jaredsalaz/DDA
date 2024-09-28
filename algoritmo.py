@@ -101,14 +101,35 @@ def rellenar_triangulo(xa, ya, xb, yb, xc, yc):
     # Combina todos los puntos de las líneas
     puntos = set(puntos_ab + puntos_bc + puntos_ca)
     
-    # Rellenar el triángulo
-    for y in range(min(ya, yb, yc), max(ya, yb, yc) + 1):
-        puntos_en_y = [p for p in puntos if p[1] == y]
-        if len(puntos_en_y) > 1:
+    # Rellenar el triángulo usando AB como referencia
+    for (x_ab, y_ab) in puntos_ab:
+        # Encuentra los puntos en BC y CA que están en la misma línea horizontal que el punto actual de AB
+        puntos_en_y_bc = [p for p in puntos_bc if p[1] == y_ab]
+        puntos_en_y_ca = [p for p in puntos_ca if p[1] == y_ab]
+        
+        # Combina los puntos encontrados en BC y CA
+        puntos_en_y = puntos_en_y_bc + puntos_en_y_ca
+        
+        if len(puntos_en_y) > 0:
             x_min = min(p[0] for p in puntos_en_y)
             x_max = max(p[0] for p in puntos_en_y)
             for x in range(int(x_min), int(x_max) + 1):
-                puntos.add((x, y))
+                puntos.add((x, y_ab))
+    
+    # Iterar sobre los puntos de AB para rellenar el triángulo
+    for (x_ab, y_ab) in puntos_ab:
+        for (x_bc, y_bc) in puntos_bc:
+            if y_bc == y_ab:
+                x_min = min(x_ab, x_bc)
+                x_max = max(x_ab, x_bc)
+                for x in range(int(x_min), int(x_max) + 1):
+                    puntos.add((x, y_ab))
+        for (x_ca, y_ca) in puntos_ca:
+            if y_ca == y_ab:
+                x_min = min(x_ab, x_ca)
+                x_max = max(x_ab, x_ca)
+                for x in range(int(x_min), int(x_max) + 1):
+                    puntos.add((x, y_ab))
     
     return sorted(puntos)
 
