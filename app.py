@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import json
-from algoritmo import algoritmo_dda_con_pendiente, determinar_caso
+from algoritmo import algoritmo_dda_triangulo, determinar_caso_triangulo, rellenar_triangulo
 import webbrowser
 from threading import Timer
 
@@ -13,30 +13,35 @@ def home():
     # Renderiza la plantilla 'home.html' cuando se accede a la ruta principal
     return render_template('home.html')
 
-# Define la ruta para calcular los puntos usando el método DDA
-@app.route('/calcular_puntos', methods=['POST'])
-def calcular_puntos():
+# Define la ruta para calcular los puntos del triángulo usando el método DDA
+@app.route('/calcular_puntos_triangulo', methods=['POST'])
+def calcular_puntos_triangulo():
     # Carga los datos JSON enviados en la solicitud POST
     data = json.loads(request.data)
-    x0 = int(data['x0'])
-    y0 = int(data['y0'])
-    x1 = int(data['x1'])
-    y1 = int(data['y1'])
+    xa = int(data['xa'])
+    ya = int(data['ya'])
+    xb = int(data['xb'])
+    yb = int(data['yb'])
+    xc = int(data['xc'])
+    yc = int(data['yc'])
     
-    # Calcula la pendiente de la línea
-    pendiente = (y1 - y0) / (x1 - x0) if (x1 - x0) != 0 else float('inf')
+    # Llama a la función para calcular los puntos del triángulo usando el algoritmo DDA
+    puntos_ab, puntos_bc, puntos_ca = algoritmo_dda_triangulo(xa, ya, xb, yb, xc, yc)
     
-    # Llama a la función para calcular los puntos usando el algoritmo DDA
-    puntos = algoritmo_dda_con_pendiente(x0, y0, x1, y1)
+    # Determina el caso específico del triángulo
+    casos = determinar_caso_triangulo(xa, ya, xb, yb, xc, yc)
     
-    # Determina el caso específico del algoritmo
-    caso = determinar_caso(x0, y0, x1, y1)
+    # Rellena el triángulo
+    puntos_relleno = rellenar_triangulo(xa, ya, xb, yb, xc, yc)
     
-    # Devuelve los puntos, la pendiente y el caso en formato JSON
-    # Maneja el caso de pendiente infinita
-    pendiente_str = '∞' if pendiente == float('inf') else round(pendiente, 4)
-    
-    return jsonify({'puntos': puntos, 'pendiente': pendiente_str, 'caso': caso})
+    # Devuelve los puntos y el caso en formato JSON
+    return jsonify({
+        'puntos_ab': puntos_ab,
+        'puntos_bc': puntos_bc,
+        'puntos_ca': puntos_ca,
+        'casos': casos,
+        'puntos_relleno': puntos_relleno
+    })
 
 # Función para abrir el navegador automáticamente
 def open_browser():
