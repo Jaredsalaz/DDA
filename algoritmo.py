@@ -1,37 +1,33 @@
-# Función que implementa el algoritmo DDA
-def algoritmo_dda_con_pendiente(x0, y0, x1, y1):
-    # Inicializa las coordenadas x e y con los valores iniciales
-    x = x0
-    y = y0
-    # Crea una lista de puntos y añade el punto inicial redondeado a 4 decimales
-    puntos = [(round(x, 4), round(y, 4))]
-    # Calcula la diferencia en x y en y entre los puntos finales e iniciales
-    dx = x1 - x0
-    dy = y1 - y0
-    
-    # Si dx es 0, significa que la línea es vertical
-    if dx == 0:
-        # Determina la dirección de la línea vertical
-        paso_y = 1 if y1 > y0 else -1
-        for _ in range(abs(dy)):
-            y += paso_y
-            puntos.append((round(x, 4), round(y, 4)))
+# Función que implementa el algoritmo DDA para un triángulo
+def algoritmo_dda_triangulo(xa, ya, xb, yb, xc, yc):
+    def dda(x0, y0, x1, y1):
+        x = x0
+        y = y0
+        puntos = [(round(x, 3), round(y, 3))]
+        dx = x1 - x0
+        dy = y1 - y0
+        
+        if dx == 0:
+            paso_y = 1 if y1 > y0 else -1
+            for _ in range(abs(dy)):
+                y += paso_y
+                puntos.append((round(x, 3), round(y, 3)))
+            return puntos
+        
+        pasos = max(abs(dx), abs(dy))
+        incremento_x = dx / pasos
+        incremento_y = dy / pasos
+        for _ in range(int(pasos)):
+            x += incremento_x
+            y += incremento_y
+            puntos.append((round(x, 3), round(y, 3)))
         return puntos
     
-    # Determina el número de pasos necesarios como el máximo valor absoluto entre dx y dy
-    pasos = max(abs(dx), abs(dy))
-    # Calcula los incrementos en x e y por cada paso
-    incremento_x = dx / pasos
-    incremento_y = dy / pasos
-    # Itera desde 0 hasta el número de pasos
-    for _ in range(int(pasos)):
-        # Incrementa x e y por sus respectivos incrementos
-        x += incremento_x
-        y += incremento_y
-        # Añade el nuevo punto redondeado a 4 decimales a la lista de puntos
-        puntos.append((round(x, 4), round(y, 4)))
-    # Retorna la lista de puntos calculados
-    return puntos
+    puntos_ab = dda(xa, ya, xb, yb)
+    puntos_bc = dda(xb, yb, xc, yc)
+    puntos_ca = dda(xc, yc, xa, ya)
+    
+    return puntos_ab, puntos_bc, puntos_ca
 
 # Función que determina el caso de la pendiente
 def determinar_caso(x0, y0, x1, y1):
@@ -39,8 +35,10 @@ def determinar_caso(x0, y0, x1, y1):
     if x1 == x0:
         if y1 > y0:
             return "Pendiente indefinida (vertical, m = ∞), de abajo hacia arriba"
-        else:
+        elif y1 < y0:
             return "Pendiente indefinida (vertical, m = ∞), de arriba hacia abajo"
+        else:
+            return "Error: Los puntos son idénticos"
     
     # Si las coordenadas y son iguales, la pendiente es 0 (línea horizontal)
     elif y1 == y0:
@@ -58,55 +56,94 @@ def determinar_caso(x0, y0, x1, y1):
             return "Pendiente igual a 1 (m = 1), de izquierda a derecha y de abajo hacia arriba"
         elif x1 < x0 and y1 < y0:
             return "Pendiente igual a 1 (m = 1), de derecha a izquierda y de arriba hacia abajo"
-        elif x1 > x0 and y1 < y0:
-            return "Pendiente igual a 1 (m = 1), de izquierda a derecha y de arriba hacia abajo"
-        elif x1 < x0 and y1 > y0:
-            return "Pendiente igual a 1 (m = 1), de derecha a izquierda y de abajo hacia arriba"
     elif m == -1:
         if x1 > x0 and y1 < y0:
             return "Pendiente igual a -1 (m = -1), de izquierda a derecha y de arriba hacia abajo"
         elif x1 < x0 and y1 > y0:
             return "Pendiente igual a -1 (m = -1), de derecha a izquierda y de abajo hacia arriba"
-        elif x1 > x0 and y1 > y0:
-            return "Pendiente igual a -1 (m = -1), de izquierda a derecha y de abajo hacia arriba"
-        elif x1 < x0 and y1 < y0:
-            return "Pendiente igual a -1 (m = -1), de derecha a izquierda y de arriba hacia abajo"
     elif 0 < m < 1:
         if x1 > x0:
-            return "1 Pendiente positiva menor que 1 (0 < m < 1), de izquierda a derecha y de abajo hacia arriba"
+            return "Pendiente positiva menor que 1 (0 < m < 1), de izquierda a derecha y de abajo hacia arriba"
         else:
-            return "2 Pendiente positiva menor que 1 (0 < m < 1), de derecha a izquierda y de arriba hacia abajo"
+            return "Pendiente positiva menor que 1 (0 < m < 1), de derecha a izquierda y de arriba hacia abajo"
     elif m > 1:
         if x1 > x0:
-            return "3 Pendiente positiva mayor que 1 (m > 1), de izquierda a derecha y de abajo hacia arriba"
+            return "Pendiente positiva mayor que 1 (m > 1), de izquierda a derecha y de abajo hacia arriba"
         else:
-            return "4 Pendiente positiva mayor que 1 (m > 1), de derecha a izquierda y de abajo hacia arriba"
+            return "Pendiente positiva mayor que 1 (m > 1), de derecha a izquierda y de abajo hacia arriba"
     elif m < -1:
-        if x1 > x0 and y1 > y0:
-            return "Pendiente negativa menor que -1 (m < -1), de izquierda a derecha y de abajo hacia arriba"
-        elif x1 < x0 and y1 < y0:
-            return "Pendiente negativa menor que -1 (m < -1), de derecha a izquierda y de arriba hacia abajo"
-        elif x1 > x0 and y1 < y0:
-            return "4 Pendiente negativa menor que -1 (m < -1), de izquierda a derecha y de arriba hacia abajo"
-        elif x1 < x0 and y1 > y0:
-            return "3 Pendiente negativa menor que -1 (m < -1), de derecha a izquierda y de abajo hacia arriba"
+        if x1 > x0:
+            return "Pendiente negativa menor que -1 (m < -1), de izquierda a derecha y de arriba hacia abajo"
+        else:
+            return "Pendiente negativa menor que -1 (m < -1), de derecha a izquierda y de abajo hacia arriba"
     elif -1 < m < 0:
         if x1 > x0:
-            return "2 Pendiente negativa mayor que -1 (-1 < m < 0), de izquierda a derecha y de arriba hacia abajo"
+            return "Pendiente negativa mayor que -1 (-1 < m < 0), de izquierda a derecha y de arriba hacia abajo"
         else:
-            return "1 Pendiente negativa mayor que -1 (-1 < m < 0), de derecha a izquierda y de abajo hacia arriba"
+            return "Pendiente negativa mayor que -1 (-1 < m < 0), de derecha a izquierda y de abajo hacia arriba"
     else:
         return "Caso no determinado"
+
+# Función que determina el caso del triángulo
+def determinar_caso_triangulo(xa, ya, xb, yb, xc, yc):
+    casos = {
+        'AB': determinar_caso(xa, ya, xb, yb),
+        'BC': determinar_caso(xb, yb, xc, yc),
+        'CA': determinar_caso(xc, yc, xa, ya)
+    }
     
-# Define los puntos iniciales y finales
-x0, y0, x1, y1 = 35, 27, 35, 22
+    return casos
 
-# Llama a la función para calcular los puntos usando el algoritmo DDA
-puntos = algoritmo_dda_con_pendiente(x0, y0, x1, y1)
+# Función para rellenar el triángulo
+def rellenar_triangulo(xa, ya, xb, yb, xc, yc):
+    puntos_ab, puntos_bc, puntos_ca = algoritmo_dda_triangulo(xa, ya, xb, yb, xc, yc)
+    
+    # Combina todos los puntos de las líneas
+    puntos = set(puntos_ab + puntos_bc + puntos_ca)
+    
+    # Rellenar el triángulo usando AB como referencia
+    for (x_ab, y_ab) in puntos_ab:
+        # Encuentra los puntos en BC y CA que están en la misma línea horizontal que el punto actual de AB
+        puntos_en_y_bc = [p for p in puntos_bc if p[1] == y_ab]
+        puntos_en_y_ca = [p for p in puntos_ca if p[1] == y_ab]
+        
+        # Combina los puntos encontrados en BC y CA
+        puntos_en_y = puntos_en_y_bc + puntos_en_y_ca
+        
+        if len(puntos_en_y) > 0:
+            x_min = min(p[0] for p in puntos_en_y)
+            x_max = max(p[0] for p in puntos_en_y)
+            for x in range(int(x_min), int(x_max) + 1):
+                puntos.add((x, y_ab))
+    
+    # Iterar sobre los puntos de AB para rellenar el triángulo
+    for (x_ab, y_ab) in puntos_ab:
+        for (x_bc, y_bc) in puntos_bc:
+            if y_bc == y_ab:
+                x_min = min(x_ab, x_bc)
+                x_max = max(x_ab, x_bc)
+                for x in range(int(x_min), int(x_max) + 1):
+                    puntos.add((x, y_ab))
+        for (x_ca, y_ca) in puntos_ca:
+            if y_ca == y_ab:
+                x_min = min(x_ab, x_ca)
+                x_max = max(x_ab, x_ca)
+                for x in range(int(x_min), int(x_max) + 1):
+                    puntos.add((x, y_ab))
+    
+    return sorted(puntos)
 
-# Llama a la función para determinar el caso de la pendiente
-caso = determinar_caso(x0, y0, x1, y1)
+# Define los puntos del triángulo
+xa, ya = 10, 10
+xb, yb = 20, 20
+xc, yc = 10, 20
 
-# Imprime los puntos calculados y el caso determinado
-print(f"Puntos: {puntos}")
-print(f"Caso: {caso}")
+# Llama a la función para determinar el caso del triángulo
+casos = determinar_caso_triangulo(xa, ya, xb, yb, xc, yc)
+print(f"Casos del triángulo: {casos}")
+
+# Llama a la función para rellenar el triángulo
+puntos_triangulo = rellenar_triangulo(xa, ya, xb, yb, xc, yc)
+
+# Imprime los puntos del triángulo
+print(f"Puntos del triángulo: {puntos_triangulo}")

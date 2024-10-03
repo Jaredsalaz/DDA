@@ -61,8 +61,9 @@ body {
   opacity: 1;
   transition-duration: .3s;
 }
+
 .form-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   background: linear-gradient(#212121, #212121) padding-box,
               linear-gradient(145deg, transparent 35%,#e81cff, #40c9ff) border-box;
@@ -79,26 +80,11 @@ body {
   z-index: 1001;
   position: relative;
 }
-
-.flex-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
-}
-
-.flex-item {
-  margin: 10px;
-}
-
-.form-section {
-  flex: 1;
-  max-width: 300px; /* Ajusta el ancho máximo del formulario */
-}
 .graph-section canvas {
     width: 100%;
-    height: 80%;
+    height: 70%;
 }
+
 .graph-section {
   flex: 2;
   display: flex;
@@ -106,29 +92,77 @@ body {
   align-items: center;
 }
 
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* Distribuye el espacio entre los elementos */
+  margin-bottom: 0px;
+}
+.flex-container-table {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* Distribuye el espacio entre los elementos */
+  margin-top: 0px;
+}
+
+.flex-item {
+  flex: 1;
+  min-width: 300px; /* Asegura que cada tabla tenga un ancho mínimo */
+  margin: 10px; /* Añade un margen alrededor de cada tabla */
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-group {
+  flex: 1;
+  margin: 5px;
+}
+
 .table-section {
   flex: 1;
   max-width: 300px; /* Ajusta el ancho máximo de la tabla */
 }
 
-#tabla-puntos {
+.table-section h2 {
+  text-align: center;
+  color: #e81cff;
+  font-size: 24px;
+}
+
+.table-section table {
   width: 100%;
-  border-collapse: separate; /* Cambia a 'separate' para que los bordes redondeados funcionen correctamente */
-  border-spacing: 0; /* Elimina el espacio entre las celdas */
+  margin-top: 10px;
+  border-collapse: collapse;
   animation: fadeIn 1s ease-in-out;
+  color: #fff;
+}
+
+.table-section th, .table-section td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.table-section th {
+  background-color: #4abebe;
+  color: #fff;
+}
+
+.table-section tr:nth-child(even) {
+  background-color: #294040;
+}
+
+.table-section tr:hover {
+  background-color: #d134ff;
+  transition: background-color 0.3s ease;
+}
+
+#tabla-puntos-ab, #tabla-puntos-bc, #tabla-puntos-ca {
   border-radius: 10px; /* Aplica el borde redondeado a la tabla */
   overflow: hidden; /* Asegura que los bordes redondeados se apliquen correctamente */
-}
-
-#tabla-puntos th, #tabla-puntos td {
-  border: 2px solid #ffffff;
-  padding: 8px;
-  
-}
-
-#tabla-puntos th {
-  background-color: #870b95;
-  text-align: left;
 }
 
 .form-container button:active {
@@ -221,37 +255,6 @@ canvas {
   margin-top: 20px;
   border: 1px solid #ddd;
   border-radius: 4px;
-}
-
-table {
-  width: 100%;
-  margin-top: 20px;
-  border-collapse: collapse;
-  animation: fadeIn 1s ease-in-out;
-  color: #fff;
-}
-
-table, th, td {
-  border: 1px solid #ddd;
-}
-
-th, td {
-  padding: 12px;
-  text-align: center;
-}
-
-th {
-  background-color: #4abebe;
-  color: #fff;
-}
-
-tr:nth-child(even) {
-  background-color: #294040;
-}
-
-tr:hover {
-  background-color: #d134ff;
-  transition: background-color 0.3s ease;
 }
 
 @keyframes fadeIn {
