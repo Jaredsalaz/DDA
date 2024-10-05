@@ -1,12 +1,12 @@
 body {
   font-family: 'Arial', sans-serif;
   background-color: #f4f4f9;
-  color: #333;
+  color: #f0f0f0;
   padding: 20px;
   width: 97%;
   height: 100%;
-  --color: rgba(106, 179, 180, 0.505);
-  background-color: #4c4d82;
+  --color: rgba(106, 179, 180, 0.505); 
+  background-color: #202f3f;  /*fondo*/
   background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
       linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
   background-size: 55px 55px;
@@ -17,7 +17,7 @@ body {
   width: 140px;
   height: 50px;
   border-radius: 50px;
-  background-color: rgb(20, 20, 20);
+  background-color: rgb(20, 20, 20); /*boton de limpiar*/
   border: none;
   font-weight: 600;
   display: flex;
@@ -65,8 +65,8 @@ body {
 .form-container {
   max-width: 1400px;
   margin: 0 auto;
-  background: linear-gradient(#833535, #212121) padding-box,
-              linear-gradient(145deg, transparent 35%,#3e73a2, #40c9ff) border-box;
+  background: linear-gradient(#181414, #000000) padding-box,  /*caja de almacenamiento del programa*/
+              linear-gradient(145deg, transparent 35%,#f8f8f8, #0c0e0f) border-box;
   border: 2px solid transparent;
   padding: 32px 24px;
   font-size: 14px;
@@ -128,7 +128,7 @@ body {
 
 .table-section h2 {
   text-align: center;
-  color: #e81cff;
+  color: #ffffff;  /*cambiar el color de la iteraciones*/
   font-size: 24px;
 }
 
@@ -147,12 +147,12 @@ body {
 }
 
 .table-section th {
-  background-color: #4abebe;
+  background-color: #1d2727;
   color: #fff;
 }
 
 .table-section tr:nth-child(even) {
-  background-color: #294040;
+  background-color: #294040; /*cambiar el color a x y de la tabla*/
 }
 
 .table-section tr:hover {
@@ -200,7 +200,7 @@ body {
 }
 
 .form-container h1 {
-  color: #e81cff;
+  color: #ffffff;
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 16px;
@@ -229,7 +229,12 @@ body {
 
 h1 {
   text-align: center;
-  color: #444;
+  font-family: Jost, sans-serif;
+  font-weight: bold;
+  font-size: 3rem;
+  background: linear-gradient(rgb(159, 220, 255) 50%, rgb(160, 73, 73) 75%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 form {
@@ -247,7 +252,7 @@ form label {
 form input {
   flex: 1 1 100%;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #f8f8f8;
   border-radius: 4px;
 }
 
@@ -388,11 +393,11 @@ canvas {
   top: 0;
   width: 50%;
   height: 100%;
-  background-color: #144153;
+  background-color: #000000;
   z-index: 1000;
   animation: curtainOpen 2s forwards, curtainWave 2s infinite;
-  background-image: linear-gradient(to bottom, #1c4e61, #333);
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+  background-image: url("../static/cort3.avif"); /*CORTINA PRINCIPAL*/
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.863);
   overflow: hidden;
   pointer-events: none; 
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), 0 calc(100% - 20px));
@@ -447,9 +452,13 @@ canvas {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #2e363c;
+  background-image: url("../static/bom.gif" ); /*CORTINA*/
   color: #e81cff;
-  font-size: 24px;
+  background-size: cover; /* Hace que la imagen cubra completamente la pantalla */
+  background-position: center; /* Centra la imagen */
+  background-repeat: no-repeat; /* Evita que la imagen se repita */
+  background-color: #000; /* Color de fondo en caso de espacios vacíos */
+  font-size: 40px;
   font-weight: 600;
   display: flex;
   justify-content: center;
@@ -457,7 +466,9 @@ canvas {
   z-index: 999;
   animation: fadeOut 1s forwards;
   animation-delay: 2s;
+  text-align: center;
 }
+
 
 @keyframes fadeOut {
   0% {
