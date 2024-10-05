@@ -94,35 +94,63 @@ def determinar_caso_triangulo(xa, ya, xb, yb, xc, yc):
     
     return casos
 
+# Función para verificar si un punto está dentro de un triángulo
+def punto_en_triangulo(px, py, xa, ya, xb, yb, xc, yc):
+    def signo(x1, y1, x2, y2, x3, y3):
+        return (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3)
+    
+    d1 = signo(px, py, xa, ya, xb, yb)
+    d2 = signo(px, py, xb, yb, xc, yc)
+    d3 = signo(px, py, xc, yc, xa, ya)
+    
+    tiene_neg = (d1 < 0) or (d2 < 0) or (d3 < 0)
+    tiene_pos = (d1 > 0) or (d2 > 0) or (d3 > 0)
+    
+    return not (tiene_neg and tiene_pos)
+
 # Función para rellenar el triángulo
 def rellenar_triangulo(xa, ya, xb, yb, xc, yc):
     puntos_ab, puntos_bc, puntos_ca = algoritmo_dda_triangulo(xa, ya, xb, yb, xc, yc)
     
     # Combina todos los puntos de las líneas
-    puntos = set(puntos_ab + puntos_bc + puntos_ca)
+    puntos_borde = set(puntos_ab + puntos_bc + puntos_ca)
+    puntos_relleno = set()
     
     # Encuentra los límites del triángulo
-    y_min = int(min(p[1] for p in puntos))
-    y_max = int(max(p[1] for p in puntos))
+    y_min = int(min(p[1] for p in puntos_borde))
+    y_max = int(max(p[1] for p in puntos_borde))
     
     # Rellenar el triángulo
     for y in range(y_min, y_max + 1):
-        puntos_en_y = [p for p in puntos if int(p[1]) == y]
+        puntos_en_y = [p for p in puntos_borde if int(p[1]) == y]
         if len(puntos_en_y) > 1:
             x_min = int(min(p[0] for p in puntos_en_y))
             x_max = int(max(p[0] for p in puntos_en_y))
             for x in range(x_min, x_max + 1):
-                puntos.add((x, y))
+                if (x, y) not in puntos_borde and punto_en_triangulo(x, y, xa, ya, xb, yb, xc, yc):
+                    puntos_relleno.add((x, y))
     
-    return sorted(puntos)
+    # Combina los puntos de borde y relleno
+    puntos_triangulo = sorted(puntos_borde | puntos_relleno)
+    
+    return puntos_triangulo
 
 # Define los puntos del triángulo
-xa, ya = -3, -6
-xb, yb = 8, 0
-xc, yc = -8, 4
+ejemplos = [
+    (-3, -6, 8, 0, -8, 4),
+    (0, 0, 5, 5, 5, 0),
+    (1, 1, 4, 4, 1, 4),
+    (-5, -5, 0, 0, -5, 0),
+    (2, 2, 6, 2, 4, 6),
+    (-4, -4, -1, -1, -4, -1),
+    (3, 3, 7, 3, 5, 7),
+    (-2, -2, 2, 2, -2, 2),
+    (0, 0, 3, 4, 6, 0),
+    (-6, -6, -2, -2, -6, -2),
+    (1, 1, 5, 1, 3, 5)
+]
 
-# Llama a la función para rellenar el triángulo
-puntos_triangulo = rellenar_triangulo(xa, ya, xb, yb, xc, yc)
-
-# Imprime los puntos del triángulo
-print(f"Puntos del triángulo: {puntos_triangulo}")
+# Llama a la función para rellenar el triángulo para cada ejemplo
+for i, (xa, ya, xb, yb, xc, yc) in enumerate(ejemplos):
+    puntos_triangulo = rellenar_triangulo(xa, ya, xb, yb, xc, yc)
+    print(f"Triángulo {i+1} - Puntos del triángulo: {puntos_triangulo}")
