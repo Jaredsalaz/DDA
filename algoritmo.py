@@ -117,16 +117,18 @@ def rellenar_triangulo(xa, ya, xb, yb, xc, yc):
     puntos_relleno = set()
     
     # Encuentra los límites del triángulo
-    y_min = int(min(p[1] for p in puntos_borde))
-    y_max = int(max(p[1] for p in puntos_borde))
+    x_min = min(p[0] for p in puntos_borde)
+    x_max = max(p[0] for p in puntos_borde)
+    y_min = min(p[1] for p in puntos_borde)
+    y_max = max(p[1] for p in puntos_borde)
     
     # Rellenar el triángulo
-    for y in range(y_min, y_max + 1):
+    for y in range(int(y_min), int(y_max) + 1):
         puntos_en_y = [p for p in puntos_borde if int(p[1]) == y]
         if len(puntos_en_y) > 1:
-            x_min = int(min(p[0] for p in puntos_en_y))
-            x_max = int(max(p[0] for p in puntos_en_y))
-            for x in range(x_min, x_max + 1):
+            x_min_y = min(p[0] for p in puntos_en_y)
+            x_max_y = max(p[0] for p in puntos_en_y)
+            for x in range(int(x_min_y), int(x_max_y) + 1):
                 if (x, y) not in puntos_borde and punto_en_triangulo(x, y, xa, ya, xb, yb, xc, yc):
                     puntos_relleno.add((x, y))
     
@@ -134,23 +136,3 @@ def rellenar_triangulo(xa, ya, xb, yb, xc, yc):
     puntos_triangulo = sorted(puntos_borde | puntos_relleno)
     
     return puntos_triangulo
-
-# Define los puntos del triángulo
-ejemplos = [
-    (-3, -6, 8, 0, -8, 4),
-    (0, 0, 5, 5, 5, 0),
-    (1, 1, 4, 4, 1, 4),
-    (-5, -5, 0, 0, -5, 0),
-    (2, 2, 6, 2, 4, 6),
-    (-4, -4, -1, -1, -4, -1),
-    (3, 3, 7, 3, 5, 7),
-    (-2, -2, 2, 2, -2, 2),
-    (0, 0, 3, 4, 6, 0),
-    (-6, -6, -2, -2, -6, -2),
-    (1, 1, 5, 1, 3, 5)
-]
-
-# Llama a la función para rellenar el triángulo para cada ejemplo
-for i, (xa, ya, xb, yb, xc, yc) in enumerate(ejemplos):
-    puntos_triangulo = rellenar_triangulo(xa, ya, xb, yb, xc, yc)
-    print(f"Triángulo {i+1} - Puntos del triángulo: {puntos_triangulo}")
