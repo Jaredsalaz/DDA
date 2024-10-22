@@ -134,6 +134,9 @@ def graficar_circulo_animado(puntos_relleno, puntos_borde, Xc, Yc, r):
     relleno = ax.scatter([], [], color='r')
     borde = ax.scatter([], [], color='b')
 
+    plt.figtext(0.5, 0.98, 'Hecho por Jared Salazar', ha='center', fontsize=8)
+    plt.figtext(0.5, 0.95, f'Centro: ({Xc}, {Yc})  Radio: {r}', ha='center', fontsize=12)
+
     def init():
         relleno.set_offsets(np.empty((0, 2)))
         borde.set_offsets(np.empty((0, 2)))
@@ -182,20 +185,27 @@ def solicitar_parametros():
         entry_Yc.delete(0, tk.END)
         entry_r.delete(0, tk.END)
 
+    def focus_next_widget(event):
+        event.widget.tk_focusNext().focus()
+        return "break"
+
     root = tk.Tk()
     root.title("Parámetros del Círculo")
 
     tk.Label(root, text="Coordenada X del centro:").grid(row=0, column=0)
     entry_Xc = tk.Entry(root)
     entry_Xc.grid(row=0, column=1)
+    entry_Xc.bind("<Return>", focus_next_widget)
 
     tk.Label(root, text="Coordenada Y del centro:").grid(row=1, column=0)
     entry_Yc = tk.Entry(root)
     entry_Yc.grid(row=1, column=1)
+    entry_Yc.bind("<Return>", focus_next_widget)
 
     tk.Label(root, text="Radio:").grid(row=2, column=0)
     entry_r = tk.Entry(root)
     entry_r.grid(row=2, column=1)
+    entry_r.bind("<Return>", focus_next_widget)
 
     tk.Button(root, text="Aceptar", command=obtener_parametros).grid(row=3, columnspan=2)
 
