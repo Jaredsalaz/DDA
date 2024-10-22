@@ -80,8 +80,12 @@ def imprimir_tablas(puntos, Xc, Yc):
 
     tab_control.pack(expand=1, fill='both')
 
-    headers = ["N", "Pk", "Xk+1", "Yk-1"]
     for i, tab in enumerate(tabs):
+        if i == 0:
+            headers = ["N", "Pk", "Xk+1", "Yk-1"]
+        else:
+            headers = ["Xk+1", "Yk-1"]
+        
         tree = ttk.Treeview(tab, columns=headers, show='headings')
         for header in headers:
             tree.heading(header, text=header)
