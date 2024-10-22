@@ -1,14 +1,16 @@
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import numpy as np
 
 def plot_circle_points(Xc, Yc, x, y, octantes):
-    octantes[0].append((x, y))
-    octantes[1].append((-x, y))
-    octantes[2].append((x, -y))
-    octantes[3].append((-x, -y))
-    octantes[4].append((y, x))
-    octantes[5].append((-y, x))
-    octantes[6].append((y, -x))
-    octantes[7].append((-y, -x))
+    octantes[0].append((Xc + x, Yc + y))
+    octantes[1].append((Xc - x, Yc + y))
+    octantes[2].append((Xc + x, Yc - y))
+    octantes[3].append((Xc - x, Yc - y))
+    octantes[4].append((Xc + y, Yc + x))
+    octantes[5].append((Xc - y, Yc + x))
+    octantes[6].append((Xc + y, Yc - x))
+    octantes[7].append((Xc - y, Yc - x))
 
 def midpoint_circle_algorithm(Xc, Yc, r):
     x = 0
@@ -99,12 +101,33 @@ def imprimir_tablas(puntos, Xc, Yc):
     for x, y, _ in puntos:
         print(f"{y}\t{-x}")
 
-def graficar_circulo(puntos_relleno, Xc, Yc):
-    x_vals = [p[0] for p in puntos_relleno]
-    y_vals = [p[1] for p in puntos_relleno]
+def graficar_circulo_animado(puntos_relleno, puntos_borde, Xc, Yc):
+    fig, ax = plt.subplots()
+    ax.set_aspect('equal', adjustable='box')
+    ax.grid(True)
+    ax.set_xlim(Xc - r - 1, Xc + r + 1)
+    ax.set_ylim(Yc - r - 1, Yc + r + 1)
 
-    plt.scatter(x_vals, y_vals, s=1, color='blue')
-    plt.gca().set_aspect('equal', adjustable='box')
+    x_vals_relleno = [p[0] for p in puntos_relleno]
+    y_vals_relleno = [p[1] for p in puntos_relleno]
+
+    x_vals_borde = [p[0] for p in puntos_borde]
+    y_vals_borde = [p[1] for p in puntos_borde]
+
+    relleno = ax.scatter([], [], color='r')
+    borde = ax.scatter([], [], color='b')
+
+    def init():
+        relleno.set_offsets(np.empty((0, 2)))
+        borde.set_offsets(np.empty((0, 2)))
+        return relleno, borde
+
+    def animate(i):
+        relleno.set_offsets(np.c_[x_vals_relleno[:i], y_vals_relleno[:i]])
+        borde.set_offsets(np.c_[x_vals_borde[:i], y_vals_borde[:i]])
+        return relleno, borde
+
+    ani = animation.FuncAnimation(fig, animate, init_func=init, frames=len(x_vals_relleno), interval=50, blit=True)
     plt.show()
 
 # Solicitar al usuario los parámetros del círculo
@@ -126,5 +149,5 @@ puntos_relleno = rellenar_circulo(puntos_borde, Xc, Yc)
 # Imprimir las tablas de los puntos calculados
 imprimir_tablas(puntos, Xc, Yc)
 
-# Graficar el círculo relleno
-graficar_circulo(puntos_relleno, Xc, Yc)
+# Graficar el círculo relleno con borde animado
+graficar_circulo_animado(puntos_relleno, puntos_borde, Xc, Yc)
