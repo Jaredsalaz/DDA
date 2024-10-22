@@ -69,6 +69,15 @@ def imprimir_tablas(puntos, Xc, Yc):
     root = tk.Tk()
     root.title("Tablas de Puntos Calculados")
 
+    # Get screen width and height
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+
+    # Set window size and position
+    window_width = screen_width // 2
+    window_height = screen_height // 2
+    root.geometry(f"{window_width}x{window_height}+{screen_width - window_width}+0")
+
     tab_control = ttk.Notebook(root)
 
     tabs = []
@@ -150,6 +159,8 @@ def graficar_circulo_animado(puntos_relleno, puntos_borde, Xc, Yc, r):
         return relleno, borde
 
     ani = animation.FuncAnimation(fig, animate, init_func=init, frames=len(x_vals_relleno), interval=50, blit=True)
+
+    # Show the plot
     plt.show()
 
 def solicitar_parametros():
@@ -192,6 +203,15 @@ def solicitar_parametros():
     root = tk.Tk()
     root.title("Parámetros del Círculo")
 
+    # Center the input window on the screen
+    window_width = 300
+    window_height = 150
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    position_top = int(screen_height / 2 - window_height / 2)
+    position_right = int(screen_width / 2 - window_width / 2)
+    root.geometry(f"{window_width}x{window_height}+{position_right}+{position_top}")
+
     tk.Label(root, text="Coordenada X del centro:").grid(row=0, column=0)
     entry_Xc = tk.Entry(root)
     entry_Xc.grid(row=0, column=1)
@@ -213,33 +233,7 @@ def solicitar_parametros():
 
 def main():
     # Solicitar al usuario los parámetros del círculo
-    Xc, Yc, r = solicitar_parametros()
-
-    # Convertir los parámetros a enteros
-    Xc, Yc, r = int(Xc), int(Yc), int(r)
-
-    # Obtener los puntos del círculo y los octantes
-    puntos, octantes = algoritmo_punto_medio_circulo(Xc, Yc, r)
-
-    # Obtener los puntos del borde del círculo
-    puntos_borde = set()
-    for octante in octantes:
-        puntos_borde.update(octante)
-
-    # Rellenar el círculo
-    puntos_relleno = rellenar_circulo(puntos_borde, Xc, Yc)
-
-    # Crear hilos para ejecutar las funciones en paralelo
-    hilo_tablas = threading.Thread(target=imprimir_tablas, args=(puntos, Xc, Yc))
-    hilo_animacion = threading.Thread(target=graficar_circulo_animado, args=(puntos_relleno, puntos_borde, Xc, Yc, r))
-
-    # Iniciar los hilos
-    hilo_tablas.start()
-    hilo_animacion.start()
-
-    # Esperar a que los hilos terminen
-    hilo_tablas.join()
-    hilo_animacion.join()
+    solicitar_parametros()
 
 if __name__ == "__main__":
     main()
