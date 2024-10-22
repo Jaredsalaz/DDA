@@ -149,11 +149,64 @@ def graficar_circulo_animado(puntos_relleno, puntos_borde, Xc, Yc, r):
     ani = animation.FuncAnimation(fig, animate, init_func=init, frames=len(x_vals_relleno), interval=50, blit=True)
     plt.show()
 
+def solicitar_parametros():
+    def obtener_parametros():
+        Xc = entry_Xc.get()
+        Yc = entry_Yc.get()
+        r = entry_r.get()
+        
+        # Verificamos si los valores son válidos
+        try:
+            Xc, Yc, r = int(Xc), int(Yc), int(r)
+            print(f"Centro: ({Xc}, {Yc}), Radio: {r}")
+            
+            # Llamar al algoritmo principal con los parámetros
+            puntos, octantes = algoritmo_punto_medio_circulo(Xc, Yc, r)
+            puntos_borde = set()
+            for octante in octantes:
+                puntos_borde.update(octante)
+            puntos_relleno = rellenar_circulo(puntos_borde, Xc, Yc)
+
+            # Ejecutar funciones en paralelo
+            hilo_tablas = threading.Thread(target=imprimir_tablas, args=(puntos, Xc, Yc))
+            hilo_animacion = threading.Thread(target=graficar_circulo_animado, args=(puntos_relleno, puntos_borde, Xc, Yc, r))
+
+            hilo_tablas.start()
+            hilo_animacion.start()
+
+        except ValueError:
+            print("Por favor, introduce valores numéricos válidos.")
+        
+        # Limpiar los campos de entrada para nuevos valores
+        entry_Xc.delete(0, tk.END)
+        entry_Yc.delete(0, tk.END)
+        entry_r.delete(0, tk.END)
+
+    root = tk.Tk()
+    root.title("Parámetros del Círculo")
+
+    tk.Label(root, text="Coordenada X del centro:").grid(row=0, column=0)
+    entry_Xc = tk.Entry(root)
+    entry_Xc.grid(row=0, column=1)
+
+    tk.Label(root, text="Coordenada Y del centro:").grid(row=1, column=0)
+    entry_Yc = tk.Entry(root)
+    entry_Yc.grid(row=1, column=1)
+
+    tk.Label(root, text="Radio:").grid(row=2, column=0)
+    entry_r = tk.Entry(root)
+    entry_r.grid(row=2, column=1)
+
+    tk.Button(root, text="Aceptar", command=obtener_parametros).grid(row=3, columnspan=2)
+
+    root.mainloop()
+
 def main():
     # Solicitar al usuario los parámetros del círculo
-    Xc = int(input("Ingrese la coordenada X del centro del círculo: "))
-    Yc = int(input("Ingrese la coordenada Y del centro del círculo: "))
-    r = int(input("Ingrese el radio del círculo: "))
+    Xc, Yc, r = solicitar_parametros()
+
+    # Convertir los parámetros a enteros
+    Xc, Yc, r = int(Xc), int(Yc), int(r)
 
     # Obtener los puntos del círculo y los octantes
     puntos, octantes = algoritmo_punto_medio_circulo(Xc, Yc, r)
