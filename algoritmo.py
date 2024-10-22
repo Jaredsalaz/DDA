@@ -1,128 +1,62 @@
-# Función que implementa el algoritmo DDA para un triángulo
-def algoritmo_dda_triangulo(xa, ya, xb, yb, xc, yc):
-    def dda(x0, y0, x1, y1):
-        x = x0
-        y = y0
-        puntos = [(round(x, 3), round(y, 3))]
-        dx = x1 - x0
-        dy = y1 - y0
-        
-        if dx == 0:
-            paso_y = 1 if y1 > y0 else -1
-            for _ in range(abs(dy)):
-                y += paso_y
-                puntos.append((round(x, 3), round(y, 3)))
-            return puntos
-        
-        pasos = max(abs(dx), abs(dy))
-        incremento_x = dx / pasos
-        incremento_y = dy / pasos
-        for _ in range(int(pasos)):
-            x += incremento_x
-            y += incremento_y
-            puntos.append((round(x, 3), round(y, 3)))
-        return puntos
-    
-    puntos_ab = dda(xa, ya, xb, yb)
-    puntos_bc = dda(xb, yb, xc, yc)
-    puntos_ca = dda(xc, yc, xa, ya)
-    
-    return puntos_ab, puntos_bc, puntos_ca
+import matplotlib.pyplot as plt
 
-# Función que determina el caso de la pendiente
-def determinar_caso(x0, y0, x1, y1):
-    # Si las coordenadas x son iguales, la pendiente es indefinida (línea vertical)
-    if x1 == x0:
-        if y1 > y0:
-            return "Pendiente indefinida (vertical, m = ∞), de abajo hacia arriba"
-        elif y1 < y0:
-            return "Pendiente indefinida (vertical, m = ∞), de arriba hacia abajo"
-        else:
-            return "Error: Los puntos son idénticos"
-    
-    # Si las coordenadas y son iguales, la pendiente es 0 (línea horizontal)
-    elif y1 == y0:
-        if x1 > x0:
-            return "Pendiente igual a 0 (horizontal, m = 0), de izquierda a derecha"
-        else:
-            return "Pendiente igual a 0 (horizontal, m = 0), de derecha a izquierda"
-    
-    # Calcula la pendiente m
-    m = (y1 - y0) / (x1 - x0)
-    
-    # Determina el caso basado en el valor de la pendiente m y las posiciones relativas de los puntos
-    if m == 1:
-        if x1 > x0 and y1 > y0:
-            return "Pendiente igual a 1 (m = 1), de izquierda a derecha y de abajo hacia arriba"
-        elif x1 < x0 and y1 < y0:
-            return "Pendiente igual a 1 (m = 1), de derecha a izquierda y de arriba hacia abajo"
-    elif m == -1:
-        if x1 > x0 and y1 < y0:
-            return "Pendiente igual a -1 (m = -1), de izquierda a derecha y de arriba hacia abajo"
-        elif x1 < x0 and y1 > y0:
-            return "Pendiente igual a -1 (m = -1), de derecha a izquierda y de abajo hacia arriba"
-    elif 0 < m < 1:
-        if x1 > x0:
-            return "Pendiente positiva menor que 1 (0 < m < 1), de izquierda a derecha y de abajo hacia arriba"
-        else:
-            return "Pendiente positiva menor que 1 (0 < m < 1), de derecha a izquierda y de arriba hacia abajo"
-    elif m > 1:
-        if x1 > x0:
-            return "Pendiente positiva mayor que 1 (m > 1), de izquierda a derecha y de abajo hacia arriba"
-        else:
-            return "Pendiente positiva mayor que 1 (m > 1), de derecha a izquierda y de abajo hacia arriba"
-    elif m < -1:
-        if x1 > x0:
-            return "Pendiente negativa menor que -1 (m < -1), de izquierda a derecha y de arriba hacia abajo"
-        else:
-            return "Pendiente negativa menor que -1 (m < -1), de derecha a izquierda y de abajo hacia arriba"
-    elif -1 < m < 0:
-        if x1 > x0:
-            return "Pendiente negativa mayor que -1 (-1 < m < 0), de izquierda a derecha y de arriba hacia abajo"
-        else:
-            return "Pendiente negativa mayor que -1 (-1 < m < 0), de derecha a izquierda y de abajo hacia arriba"
-    else:
-        return "Caso no determinado"
+def plot_circle_points(Xc, Yc, x, y, puntos):
+    puntos.append((Xc + x, Yc + y))
+    puntos.append((Xc - x, Yc + y))
+    puntos.append((Xc + x, Yc - y))
+    puntos.append((Xc - x, Yc - y))
+    puntos.append((Xc + y, Yc + x))
+    puntos.append((Xc - y, Yc + x))
+    puntos.append((Xc + y, Yc - x))
+    puntos.append((Xc - y, Yc - x))
 
-# Función que determina el caso del triángulo
-def determinar_caso_triangulo(xa, ya, xb, yb, xc, yc):
-    casos = {
-        'AB': determinar_caso(xa, ya, xb, yb),
-        'BC': determinar_caso(xb, yb, xc, yc),
-        'CA': determinar_caso(xc, yc, xa, ya)
-    }
-    
-    return casos
+def midpoint_circle_algorithm(Xc, Yc, r):
+    x = 0
+    y = r
+    p = 1 - r
+    puntos = []
 
-# Función para rellenar el triángulo
-def rellenar_triangulo(xa, ya, xb, yb, xc, yc):
-    puntos_ab, puntos_bc, puntos_ca = algoritmo_dda_triangulo(xa, ya, xb, yb, xc, yc)
-    
-    # Combina todos los puntos de las líneas
-    puntos = set(puntos_ab + puntos_bc + puntos_ca)
-    
-    # Encuentra los límites del triángulo
-    y_min = int(min(p[1] for p in puntos))
-    y_max = int(max(p[1] for p in puntos))
-    
-    # Rellenar el triángulo
-    for y in range(y_min, y_max + 1):
-        puntos_en_y = [p for p in puntos if int(p[1]) == y]
+    plot_circle_points(Xc, Yc, x, y, puntos)
+
+    while x < y:
+        x += 1
+        if p < 0:
+            p += 2 * x + 1
+        else:
+            y -= 1
+            p += 2 * x + 1 - 2 * y
+        plot_circle_points(Xc, Yc, x, y, puntos)
+
+    return puntos
+
+def fill_circle(Xc, Yc, r):
+    puntos = midpoint_circle_algorithm(Xc, Yc, r)
+    puntos_relleno = set(puntos)
+
+    for y in range(Yc - r, Yc + r + 1):
+        puntos_en_y = [p for p in puntos if p[1] == y]
         if len(puntos_en_y) > 1:
-            x_min = int(min(p[0] for p in puntos_en_y))
-            x_max = int(max(p[0] for p in puntos_en_y))
+            x_min = min(p[0] for p in puntos_en_y)
+            x_max = max(p[0] for p in puntos_en_y)
             for x in range(x_min, x_max + 1):
-                puntos.add((x, y))
-    
-    return sorted(puntos)
+                puntos_relleno.add((x, y))
 
-# Define los puntos del triángulo
-xa, ya = -3, -6
-xb, yb = 8, 0
-xc, yc = -8, 4
+    return sorted(puntos_relleno)
 
-# Llama a la función para rellenar el triángulo
-puntos_triangulo = rellenar_triangulo(xa, ya, xb, yb, xc, yc)
+# Parámetros del círculo
+Xc, Yc = 150, 100
+r = 10
 
-# Imprime los puntos del triángulo
-print(f"Puntos del triángulo: {puntos_triangulo}")
+# Obtener los puntos del círculo relleno
+puntos_circulo = fill_circle(Xc, Yc, r)
+
+# Imprimir los puntos del círculo
+print(f"Puntos del círculo: {puntos_circulo}")
+
+# Graficar el círculo
+x_vals = [p[0] for p in puntos_circulo]
+y_vals = [p[1] for p in puntos_circulo]
+
+plt.scatter(x_vals, y_vals, s=1)
+plt.gca().set_aspect('equal', adjustable='box')
+plt.show()
