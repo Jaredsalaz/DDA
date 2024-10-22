@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
+import tkinter as tk
+from tkinter import ttk
+import threading
 
 def trazar_puntos_circulo(Xc, Yc, x, y, octantes):
     octantes[0].append((Xc + x, Yc + y))
@@ -63,45 +66,55 @@ def rellenar_circulo(puntos_borde, Xc, Yc):
     return puntos_relleno
 
 def imprimir_tablas(puntos, Xc, Yc):
-    print("N\tPk\tXk+1\tYk-1")
-    for i, (x, y, p) in enumerate(puntos):
-        if i == 0:
-            print(f"{i}\t{p}\t{x + 1}\t{y}")
-        else:
-            if puntos[i-1][2] < 0:
-                print(f"{i}\t{p}\t{x + 1}\t{y}")
-            else:
-                print(f"{i}\t{p}\t{x + 1}\t{y - 1}")
+    root = tk.Tk()
+    root.title("Tablas de Puntos Calculados")
 
-    print("\nY\tX")
-    for x, y, _ in puntos:
-        print(f"{y}\t{x}")
+    tab_control = ttk.Notebook(root)
 
-    print("\nX\t-Y")
-    for x, y, _ in puntos:
-        print(f"{x}\t{-y}")
+    tabs = []
+    nombres_octantes = ["N Pk Xk+1 Yk-1", "Y X", "X -Y", "-Y X", "-Y -X", "-X -Y", "-X Y", "Y -X"]
+    for i in range(8):
+        tab = ttk.Frame(tab_control)
+        tab_control.add(tab, text=nombres_octantes[i])
+        tabs.append(tab)
 
-    print("\n-Y\tX")
-    for x, y, _ in puntos:
-        print(f"{-y}\t{x}")
+    tab_control.pack(expand=1, fill='both')
 
-    print("\n-Y\t-X")
-    for x, y, _ in puntos:
-        print(f"{-y}\t{-x}")
+    headers = ["N", "Pk", "Xk+1", "Yk-1"]
+    for i, tab in enumerate(tabs):
+        tree = ttk.Treeview(tab, columns=headers, show='headings')
+        for header in headers:
+            tree.heading(header, text=header)
+            tree.column(header, anchor='center')
+        tree.pack(expand=1, fill='both')
 
-    print("\n-X\t-Y")
-    for x, y, _ in puntos:
-        print(f"{-x}\t{-y}")
+        for j, (x, y, p) in enumerate(puntos):
+            if i == 0:
+                if j == 0:
+                    tree.insert("", "end", values=(j, p, x + 1, y))
+                else:
+                    if puntos[j-1][2] < 0:
+                        tree.insert("", "end", values=(j, p, x + 1, y))
+                    else:
+                        tree.insert("", "end", values=(j, p, x + 1, y - 1))
+            elif i == 1:
+                tree.insert("", "end", values=(y, x))
+            elif i == 2:
+                tree.insert("", "end", values=(x, -y))
+            elif i == 3:
+                tree.insert("", "end", values=(-y, x))
+            elif i == 4:
+                tree.insert("", "end", values=(-y, -x))
+            elif i == 5:
+                tree.insert("", "end", values=(-x, -y))
+            elif i == 6:
+                tree.insert("", "end", values=(-x, y))
+            elif i == 7:
+                tree.insert("", "end", values=(y, -x))
 
-    print("\n-X\tY")
-    for x, y, _ in puntos:
-        print(f"{-x}\t{y}")
+    root.mainloop()
 
-    print("\nY\t-X")
-    for x, y, _ in puntos:
-        print(f"{y}\t{-x}")
-
-def graficar_circulo_animado(puntos_relleno, puntos_borde, Xc, Yc):
+def graficar_circulo_animado(puntos_relleno, puntos_borde, Xc, Yc, r):
     fig, ax = plt.subplots()
     ax.set_aspect('equal', adjustable='box')
     ax.grid(True)
@@ -132,24 +145,34 @@ def graficar_circulo_animado(puntos_relleno, puntos_borde, Xc, Yc):
     ani = animation.FuncAnimation(fig, animate, init_func=init, frames=len(x_vals_relleno), interval=50, blit=True)
     plt.show()
 
-# Solicitar al usuario los parámetros del círculo
-Xc = int(input("Ingrese la coordenada X del centro del círculo: "))
-Yc = int(input("Ingrese la coordenada Y del centro del círculo: "))
-r = int(input("Ingrese el radio del círculo: "))
+def main():
+    # Solicitar al usuario los parámetros del círculo
+    Xc = int(input("Ingrese la coordenada X del centro del círculo: "))
+    Yc = int(input("Ingrese la coordenada Y del centro del círculo: "))
+    r = int(input("Ingrese el radio del círculo: "))
 
-# Obtener los puntos del círculo y los octantes
-puntos, octantes = algoritmo_punto_medio_circulo(Xc, Yc, r)
+    # Obtener los puntos del círculo y los octantes
+    puntos, octantes = algoritmo_punto_medio_circulo(Xc, Yc, r)
 
-# Obtener los puntos del borde del círculo
-puntos_borde = set()
-for octante in octantes:
-    puntos_borde.update(octante)
+    # Obtener los puntos del borde del círculo
+    puntos_borde = set()
+    for octante in octantes:
+        puntos_borde.update(octante)
 
-# Rellenar el círculo
-puntos_relleno = rellenar_circulo(puntos_borde, Xc, Yc)
+    # Rellenar el círculo
+    puntos_relleno = rellenar_circulo(puntos_borde, Xc, Yc)
 
-# Imprimir las tablas de los puntos calculados
-imprimir_tablas(puntos, Xc, Yc)
+    # Crear hilos para ejecutar las funciones en paralelo
+    hilo_tablas = threading.Thread(target=imprimir_tablas, args=(puntos, Xc, Yc))
+    hilo_animacion = threading.Thread(target=graficar_circulo_animado, args=(puntos_relleno, puntos_borde, Xc, Yc, r))
 
-# Graficar el círculo relleno con borde animado
-graficar_circulo_animado(puntos_relleno, puntos_borde, Xc, Yc)
+    # Iniciar los hilos
+    hilo_tablas.start()
+    hilo_animacion.start()
+
+    # Esperar a que los hilos terminen
+    hilo_tablas.join()
+    hilo_animacion.join()
+
+if __name__ == "__main__":
+    main()
