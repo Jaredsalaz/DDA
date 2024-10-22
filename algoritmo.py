@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
 
-def plot_circle_points(Xc, Yc, x, y, octantes):
+def trazar_puntos_circulo(Xc, Yc, x, y, octantes):
     octantes[0].append((Xc + x, Yc + y))
     octantes[1].append((Xc - x, Yc + y))
     octantes[2].append((Xc + x, Yc - y))
@@ -12,14 +12,14 @@ def plot_circle_points(Xc, Yc, x, y, octantes):
     octantes[6].append((Xc + y, Yc - x))
     octantes[7].append((Xc - y, Yc - x))
 
-def midpoint_circle_algorithm(Xc, Yc, r):
+def algoritmo_punto_medio_circulo(Xc, Yc, r):
     x = 0
     y = r
     p = 1 - r
     puntos = [(x, y, p)]
     octantes = [[] for _ in range(8)]
 
-    plot_circle_points(Xc, Yc, x, y, octantes)
+    trazar_puntos_circulo(Xc, Yc, x, y, octantes)
 
     while x < y:
         x += 1
@@ -29,11 +29,11 @@ def midpoint_circle_algorithm(Xc, Yc, r):
             y -= 1
             p = p + 2 * x + 1 - 2 * y
         puntos.append((x, y, p))
-        plot_circle_points(Xc, Yc, x, y, octantes)
+        trazar_puntos_circulo(Xc, Yc, x, y, octantes)
 
     return puntos, octantes
 
-def dda_line(x0, y0, x1, y1):
+def linea_dda(x0, y0, x1, y1):
     puntos = []
     dx = x1 - x0
     dy = y1 - y0
@@ -58,7 +58,7 @@ def rellenar_circulo(puntos_borde, Xc, Yc):
         if len(puntos_en_y) > 1:
             x_min = min(p[0] for p in puntos_en_y)
             x_max = max(p[0] for p in puntos_en_y)
-            puntos_relleno.update(dda_line(x_min, y, x_max, y))
+            puntos_relleno.update(linea_dda(x_min, y, x_max, y))
 
     return puntos_relleno
 
@@ -125,6 +125,8 @@ def graficar_circulo_animado(puntos_relleno, puntos_borde, Xc, Yc):
     def animate(i):
         relleno.set_offsets(np.c_[x_vals_relleno[:i], y_vals_relleno[:i]])
         borde.set_offsets(np.c_[x_vals_borde[:i], y_vals_borde[:i]])
+        if i == len(x_vals_relleno) - 1:
+            ani.event_source.stop()
         return relleno, borde
 
     ani = animation.FuncAnimation(fig, animate, init_func=init, frames=len(x_vals_relleno), interval=50, blit=True)
@@ -136,7 +138,7 @@ Yc = int(input("Ingrese la coordenada Y del centro del círculo: "))
 r = int(input("Ingrese el radio del círculo: "))
 
 # Obtener los puntos del círculo y los octantes
-puntos, octantes = midpoint_circle_algorithm(Xc, Yc, r)
+puntos, octantes = algoritmo_punto_medio_circulo(Xc, Yc, r)
 
 # Obtener los puntos del borde del círculo
 puntos_borde = set()
