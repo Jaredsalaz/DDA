@@ -40,7 +40,7 @@ def calcular_puntos_circulo():
     # Devuelve los puntos en formato JSON
     return jsonify({
         'puntos': puntos,
-        'puntos_borde': list(puntos_borde),
+        'octantes': [list(octante) for octante in octantes],
         'puntos_relleno': list(puntos_relleno)
     })
 

@@ -83,7 +83,7 @@ document.getElementById('formulario').addEventListener('submit', function(event)
         document.getElementById('loading').style.display = 'none';
 
         const puntos = data.puntos;
-        const puntosBorde = data.puntos_borde;
+        const octantes = data.octantes;
         const puntosRelleno = data.puntos_relleno;
 
         const ctx = document.getElementById('grafica').getContext('2d');
@@ -95,36 +95,143 @@ document.getElementById('formulario').addEventListener('submit', function(event)
         window.myChart = new Chart(ctx, {
             type: 'scatter',
             data: {
-                datasets: [{
-                    label: 'Borde del Círculo',
-                    data: [],
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 2,
-                    showLine: false,
-                    fill: false,
-                    pointRadius: 5,
-                    pointHoverRadius: 7,
-                    pointBackgroundColor: 'rgba(75, 192, 192, 1)',
-                    pointHoverBackgroundColor: 'rgba(255, 99, 132, 1)',
-                    pointHoverBorderColor: 'rgba(255, 99, 132, 1)',
-                    pointHoverBorderWidth: 2,
-                    pointStyle: 'circle'
-                },
-                {
-                    label: 'Relleno del Círculo',
-                    data: [],
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1,
-                    showLine: false,
-                    fill: true,
-                    pointRadius: 3,
-                    pointHoverRadius: 5,
-                    pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-                    pointHoverBackgroundColor: 'rgba(75, 192, 192, 1)',
-                    pointHoverBorderColor: 'rgba(75, 192, 192, 1)',
-                    pointHoverBorderWidth: 1,
-                    pointStyle: 'circle'
-                }]
+                datasets: [
+                    {
+                        label: 'Octante 1',
+                        data: [],
+                        borderColor: 'rgba(255, 99, 132, 1)', // Rojo
+                        borderWidth: 2,
+                        showLine: false,
+                        fill: false,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                        pointHoverBackgroundColor: 'rgba(255, 99, 132, 1)',
+                        pointHoverBorderColor: 'rgba(255, 99, 132, 1)',
+                        pointHoverBorderWidth: 2,
+                        pointStyle: 'circle'
+                    },
+                    {
+                        label: 'Octante 2',
+                        data: [],
+                        borderColor: 'rgba(54, 162, 235, 1)', // Azul
+                        borderWidth: 2,
+                        showLine: false,
+                        fill: false,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                        pointHoverBackgroundColor: 'rgba(54, 162, 235, 1)',
+                        pointHoverBorderColor: 'rgba(54, 162, 235, 1)',
+                        pointHoverBorderWidth: 2,
+                        pointStyle: 'circle'
+                    },
+                    {
+                        label: 'Octante 3',
+                        data: [],
+                        borderColor: 'rgba(255, 255, 255, 1)', // Blanco
+                        borderWidth: 2,
+                        showLine: false,
+                        fill: false,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: 'rgba(255, 255, 255, 1)',
+                        pointHoverBackgroundColor: 'rgba(255, 255, 255, 1)',
+                        pointHoverBorderColor: 'rgba(255, 255, 255, 1)',
+                        pointHoverBorderWidth: 2,
+                        pointStyle: 'circle'
+                    },
+                    {
+                        label: 'Octante 4',
+                        data: [],
+                        borderColor: 'rgba(153, 102, 255, 1)', // Púrpura
+                        borderWidth: 2,
+                        showLine: false,
+                        fill: false,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: 'rgba(153, 102, 255, 1)',
+                        pointHoverBackgroundColor: 'rgba(153, 102, 255, 1)',
+                        pointHoverBorderColor: 'rgba(153, 102, 255, 1)',
+                        pointHoverBorderWidth: 2,
+                        pointStyle: 'circle'
+                    },
+                    {
+                        label: 'Octante 5',
+                        data: [],
+                        borderColor: 'rgba(255, 206, 86, 1)', // Amarillo
+                        borderWidth: 2,
+                        showLine: false,
+                        fill: false,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: 'rgba(255, 206, 86, 1)',
+                        pointHoverBackgroundColor: 'rgba(255, 206, 86, 1)',
+                        pointHoverBorderColor: 'rgba(255, 206, 86, 1)',
+                        pointHoverBorderWidth: 2,
+                        pointStyle: 'circle'
+                    },
+                    {
+                        label: 'Octante 6',
+                        data: [],
+                        borderColor: 'rgba(255, 159, 64, 1)', // Naranja
+                        borderWidth: 2,
+                        showLine: false,
+                        fill: false,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: 'rgba(255, 159, 64, 1)',
+                        pointHoverBackgroundColor: 'rgba(255, 159, 64, 1)',
+                        pointHoverBorderColor: 'rgba(255, 159, 64, 1)',
+                        pointHoverBorderWidth: 2,
+                        pointStyle: 'circle'
+                    },
+                    {
+                        label: 'Octante 7',
+                        data: [],
+                        borderColor: 'rgba(255, 0, 0, 1)', // Rojo
+                        borderWidth: 2,
+                        showLine: false,
+                        fill: false,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: 'rgba(255, 0, 0, 1)',
+                        pointHoverBackgroundColor: 'rgba(255, 0, 0, 1)',
+                        pointHoverBorderColor: 'rgba(255, 0, 0, 1)',
+                        pointHoverBorderWidth: 2,
+                        pointStyle: 'circle'
+                    },
+                    {
+                        label: 'Octante 8',
+                        data: [],
+                        borderColor: 'rgba(75, 192, 192, 1)', // Teal
+                        borderWidth: 2,
+                        showLine: false,
+                        fill: false,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                        pointHoverBackgroundColor: 'rgba(75, 192, 192, 1)',
+                        pointHoverBorderColor: 'rgba(75, 192, 192, 1)',
+                        pointHoverBorderWidth: 2,
+                        pointStyle: 'circle'
+                    },
+                    {
+                        label: 'Relleno',
+                        data: [],
+                        borderColor: 'rgba(0, 206, 41, 0.505)', // Verde
+                        borderWidth: 1,
+                        showLine: false,
+                        fill: true,
+                        pointRadius: 3,
+                        pointHoverRadius: 5,
+                        pointBackgroundColor: 'rgba(0, 206, 41, 0.505)',
+                        pointHoverBackgroundColor: 'rgba(0, 206, 41, 0.505)',
+                        pointHoverBorderColor: 'rgba(0, 206, 41, 0.505)',
+                        pointHoverBorderWidth: 1,
+                        pointStyle: 'circle'
+                    }
+                ]
             },
             options: {
                 plugins: {
@@ -162,34 +269,41 @@ document.getElementById('formulario').addEventListener('submit', function(event)
                     }
                 },
                 animation: {
-                    duration: 0 // Disable default animation
+                    duration: 0 // Desactivar la animación predeterminada
                 }
             }
         });
 
-        // Animate drawing the circle border point by point
-        let index = 0;
-        const drawNextBorderPoint = () => {
-            if (index < puntosBorde.length) {
-                window.myChart.data.datasets[0].data.push({ x: puntosBorde[index][0], y: puntosBorde[index][1] });
-                window.myChart.update();
-                index++;
-                setTimeout(drawNextBorderPoint, 10); // Add a delay of 100ms between each point
-            } else {
-                // Animate drawing the circle fill point by point
-                let fillIndex = 0;
-                const drawNextFillPoint = () => {
-                    if (fillIndex < puntosRelleno.length) {
-                        window.myChart.data.datasets[1].data.push({ x: puntosRelleno[fillIndex][0], y: puntosRelleno[fillIndex][1] });
-                        window.myChart.update();
-                        fillIndex++;
-                        setTimeout(drawNextFillPoint, 10); // Add a delay of 100ms between each point
-                    }
-                };
-                drawNextFillPoint();
-            }
+        // Animar el dibujo del círculo octante por octante
+        const drawOctant = (octantIndex) => {
+            const points = octantes[octantIndex];
+            let pointIndex = 0;
+            const drawNextPoint = () => {
+                if (pointIndex < points.length) {
+                    window.myChart.data.datasets[octantIndex].data.push({ x: points[pointIndex][0], y: points[pointIndex][1] });
+                    window.myChart.update();
+                    pointIndex++;
+                    setTimeout(drawNextPoint, 100); // Añadir un retraso de 100ms entre cada punto
+                } else if (octantIndex < 7) {
+                    drawOctant(octantIndex + 1);
+                } else {
+                    // Animar el dibujo del relleno del círculo punto por punto
+                    let fillIndex = 0;
+                    const drawNextFillPoint = () => {
+                        if (fillIndex < puntosRelleno.length) {
+                            window.myChart.data.datasets[8].data.push({ x: puntosRelleno[fillIndex][0], y: puntosRelleno[fillIndex][1] });
+                            window.myChart.update();
+                            fillIndex++;
+                            setTimeout(drawNextFillPoint, 10); // Añadir un retraso de 100ms entre cada punto
+                        }
+                    };
+                    drawNextFillPoint();
+                }
+            };
+            drawNextPoint();
         };
-        drawNextBorderPoint();
+
+        drawOctant(0);
 
         const octantHeaders = [
             ["N", "Pk", "Xk+1", "Yk-1"],
