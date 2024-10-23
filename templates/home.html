@@ -14,41 +14,27 @@
     <div id="curtain-left" class="curtain"></div>
     <div id="curtain-right" class="curtain"></div>
     <div id="welcome-animation" class="welcome-animation">
-        <h1>Bienvenido al Método DDA</h1>
+        <h1>Bienvenido al Algoritmo del Punto Medio</h1>
     </div>
     <div id="form-container" class="form-container" style="display: none;">
-        <h1>Método DDA Triangulo</h1>
+        <h1>Algoritmo del Punto Medio para Círculos</h1>
         <div class="flex-container">
             <div class="flex-item form-section">
                 <form id="formulario" class="form">
                     <div class="form-row">
-                        <div id="form-group-xa" class="form-group">
-                            <label for="xa">Coordenada xa:</label>
-                            <input type="number" id="xa" name="xa" required>
-                        </div>
-                        <div id="form-group-ya" class="form-group">
-                            <label for="ya">Coordenada ya:</label>
-                            <input type="number" id="ya" name="ya" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div id="form-group-xb" class="form-group">
-                            <label for="xb">Coordenada xb:</label>
-                            <input type="number" id="xb" name="xb" required>
-                        </div>
-                        <div id="form-group-yb" class="form-group">
-                            <label for="yb">Coordenada yb:</label>
-                            <input type="number" id="yb" name="yb" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
                         <div id="form-group-xc" class="form-group">
-                            <label for="xc">Coordenada xc:</label>
+                            <label for="xc">Coordenada X del centro:</label>
                             <input type="number" id="xc" name="xc" required>
                         </div>
                         <div id="form-group-yc" class="form-group">
-                            <label for="yc">Coordenada yc:</label>
+                            <label for="yc">Coordenada Y del centro:</label>
                             <input type="number" id="yc" name="yc" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div id="form-group-r" class="form-group">
+                            <label for="r">Radio:</label>
+                            <input type="number" id="r" name="r" required>
                         </div>
                     </div>
                     <button id="form-submit-btn" class="form-submit-btn" type="submit">Calcular</button>
@@ -80,17 +66,95 @@
                     <div class="spoke"></div>
                 </div>
                 <canvas id="grafica" width="200" height="200"></canvas>
-                <p id="caso-determinado"></p> <!-- Elemento para mostrar el caso determinado -->
             </div>
         </div>
         <div class="flex-container-table">
             <div class="flex-item table-section">
-                <h2>Iteraciones Lado AB</h2>
-                <table id="tabla-puntos-ab">
+                <h2>Octante 1</h2>
+                <table id="tabla-octante-1">
                     <thead>
                         <tr>
-                            <th>Iteración</th>
+                            <th>N</th>
+                            <th>Pk</th>
+                            <th>Xk+1</th>
+                            <th>Yk-1</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex-item table-section">
+                <h2>Octante 2</h2>
+                <table id="tabla-octante-2">
+                    <thead>
+                        <tr>
+                            <th>Y</th>
                             <th>X</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex-item table-section">
+                <h2>Octante 3</h2>
+                <table id="tabla-octante-3">
+                    <thead>
+                        <tr>
+                            <th>X</th>
+                            <th>-Y</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex-item table-section">
+                <h2>Octante 4</h2>
+                <table id="tabla-octante-4">
+                    <thead>
+                        <tr>
+                            <th>-Y</th>
+                            <th>X</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex-item table-section">
+                <h2>Octante 5</h2>
+                <table id="tabla-octante-5">
+                    <thead>
+                        <tr>
+                            <th>-Y</th>
+                            <th>-X</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex-item table-section">
+                <h2>Octante 6</h2>
+                <table id="tabla-octante-6">
+                    <thead>
+                        <tr>
+                            <th>-X</th>
+                            <th>-Y</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex-item table-section">
+                <h2>Octante 7</h2>
+                <table id="tabla-octante-7">
+                    <thead>
+                        <tr>
+                            <th>-X</th>
                             <th>Y</th>
                         </tr>
                     </thead>
@@ -99,27 +163,12 @@
                 </table>
             </div>
             <div class="flex-item table-section">
-                <h2>Iteraciones Lado BC</h2>
-                <table id="tabla-puntos-bc">
+                <h2>Octante 8</h2>
+                <table id="tabla-octante-8">
                     <thead>
                         <tr>
-                            <th>Iteración</th>
-                            <th>X</th>
                             <th>Y</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-            <div class="flex-item table-section">
-                <h2>Iteraciones Lado CA</h2>
-                <table id="tabla-puntos-ca">
-                    <thead>
-                        <tr>
-                            <th>Iteración</th>
-                            <th>X</th>
-                            <th>Y</th>
+                            <th>-X</th>
                         </tr>
                     </thead>
                     <tbody>

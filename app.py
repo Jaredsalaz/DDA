@@ -1,6 +1,14 @@
 from flask import Flask, render_template, request, jsonify
 import json
-from algoritmo import algoritmo_dda_triangulo, determinar_caso_triangulo, rellenar_triangulo
+from algoritmo import (
+    trazar_puntos_circulo,
+    algoritmo_punto_medio_circulo,
+    linea_dda,
+    rellenar_circulo,
+    imprimir_tablas,
+    graficar_circulo_animado,
+    solicitar_parametros
+)
 import webbrowser
 from threading import Timer
 
@@ -13,34 +21,27 @@ def home():
     # Renderiza la plantilla 'home.html' cuando se accede a la ruta principal
     return render_template('home.html')
 
-# Define la ruta para calcular los puntos del triángulo usando el método DDA
-@app.route('/calcular_puntos_triangulo', methods=['POST'])
-def calcular_puntos_triangulo():
+# Define la ruta para calcular los puntos del círculo usando el método del punto medio
+@app.route('/calcular_puntos_circulo', methods=['POST'])
+def calcular_puntos_circulo():
     # Carga los datos JSON enviados en la solicitud POST
     data = json.loads(request.data)
-    xa = int(data['xa'])
-    ya = int(data['ya'])
-    xb = int(data['xb'])
-    yb = int(data['yb'])
-    xc = int(data['xc'])
-    yc = int(data['yc'])
+    Xc = int(data['Xc'])
+    Yc = int(data['Yc'])
+    r = int(data['r'])
     
-    # Llama a la función para calcular los puntos del triángulo usando el algoritmo DDA
-    puntos_ab, puntos_bc, puntos_ca = algoritmo_dda_triangulo(xa, ya, xb, yb, xc, yc)
+    # Llama a la función para calcular los puntos del círculo usando el algoritmo del punto medio
+    puntos, octantes = algoritmo_punto_medio_circulo(Xc, Yc, r)
+    puntos_borde = set()
+    for octante in octantes:
+        puntos_borde.update(octante)
+    puntos_relleno = rellenar_circulo(puntos_borde, Xc, Yc)
     
-    # Determina el caso específico del triángulo
-    casos = determinar_caso_triangulo(xa, ya, xb, yb, xc, yc)
-    
-    # Rellena el triángulo
-    puntos_relleno = rellenar_triangulo(xa, ya, xb, yb, xc, yc)
-    
-    # Devuelve los puntos y el caso en formato JSON
+    # Devuelve los puntos en formato JSON
     return jsonify({
-        'puntos_ab': puntos_ab,
-        'puntos_bc': puntos_bc,
-        'puntos_ca': puntos_ca,
-        'casos': casos,
-        'puntos_relleno': puntos_relleno
+        'puntos': puntos,
+        'puntos_borde': list(puntos_borde),
+        'puntos_relleno': list(puntos_relleno)
     })
 
 # Función para abrir el navegador automáticamente

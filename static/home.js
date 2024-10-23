@@ -10,14 +10,10 @@ document.getElementById('clear-button').addEventListener('click', function() {
     }
 
     // Limpiar las tablas
-    const tablas = ['tabla-puntos-ab', 'tabla-puntos-bc', 'tabla-puntos-ca'];
-    tablas.forEach(tablaId => {
-        const tbody = document.getElementById(tablaId).getElementsByTagName('tbody')[0];
+    for (let i = 1; i <= 8; i++) {
+        const tbody = document.getElementById(`tabla-octante-${i}`).getElementsByTagName('tbody')[0];
         tbody.innerHTML = '';
-    });
-
-    // Limpiar el texto del caso determinado
-    document.getElementById('caso-determinado').textContent = '';
+    }
 });
 
 // Animaciones de las cortinas de bienvenida
@@ -40,10 +36,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const submitButton = document.querySelector('.form-submit-btn');
             const loading = document.getElementById('loading');
             const grafica = document.getElementById('grafica');
-            const casoDeterminado = document.getElementById('caso-determinado');
-            const tablaPuntosAb = document.getElementById('tabla-puntos-ab');
-            const tablaPuntosBc = document.getElementById('tabla-puntos-bc');
-            const tablaPuntosCa = document.getElementById('tabla-puntos-ca');
 
             formGroups.forEach((group, index) => {
                 group.style.opacity = 1;
@@ -58,18 +50,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             grafica.style.opacity = 1;
             grafica.style.animationDelay = '4.5s';
-
-            casoDeterminado.style.opacity = 1;
-            casoDeterminado.style.animationDelay = '5s';
-
-            tablaPuntosAb.style.opacity = 1;
-            tablaPuntosAb.style.animationDelay = '5.5s';
-
-            tablaPuntosBc.style.opacity = 1;
-            tablaPuntosBc.style.animationDelay = '6s';
-
-            tablaPuntosCa.style.opacity = 1;
-            tablaPuntosCa.style.animationDelay = '6.5s';
         }, 2000); // Espera a que termine la animación de las cortinas
     }, 3000); // Duración de la animación de bienvenida
 });
@@ -78,12 +58,9 @@ document.addEventListener('DOMContentLoaded', function() {
 document.getElementById('formulario').addEventListener('submit', function(event) {
     event.preventDefault();
 
-    const xa = parseFloat(document.getElementById('xa').value);
-    const ya = parseFloat(document.getElementById('ya').value);
-    const xb = parseFloat(document.getElementById('xb').value);
-    const yb = parseFloat(document.getElementById('yb').value);
-    const xc = parseFloat(document.getElementById('xc').value);
-    const yc = parseFloat(document.getElementById('yc').value);
+    const Xc = parseFloat(document.getElementById('xc').value);
+    const Yc = parseFloat(document.getElementById('yc').value);
+    const r = parseFloat(document.getElementById('r').value);
 
     const audio = document.getElementById('audio-siiuuu');
     audio.play().then(() => {
@@ -94,22 +71,20 @@ document.getElementById('formulario').addEventListener('submit', function(event)
 
     document.getElementById('loading').style.display = 'block';
 
-    fetch('/calcular_puntos_triangulo', {
+    fetch('/calcular_puntos_circulo', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ xa, ya, xb, yb, xc, yc })
+        body: JSON.stringify({ Xc, Yc, r })
     })
     .then(response => response.json())
     .then(data => {
         document.getElementById('loading').style.display = 'none';
 
-        const puntosAb = data.puntos_ab;
-        const puntosBc = data.puntos_bc;
-        const puntosCa = data.puntos_ca;
+        const puntos = data.puntos;
+        const puntosBorde = data.puntos_borde;
         const puntosRelleno = data.puntos_relleno;
-        const casos = data.casos;
 
         const ctx = document.getElementById('grafica').getContext('2d');
 
@@ -121,11 +96,11 @@ document.getElementById('formulario').addEventListener('submit', function(event)
             type: 'scatter',
             data: {
                 datasets: [{
-                    label: 'Triángulo DDA',
-                    data: [...puntosAb, ...puntosBc, ...puntosCa].map(p => ({ x: p[0], y: p[1] })),
+                    label: 'Borde del Círculo',
+                    data: puntosBorde.map(p => ({ x: p[0], y: p[1] })),
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 2,
-                    showLine: true,
+                    showLine: false,
                     fill: false,
                     pointRadius: 5,
                     pointHoverRadius: 7,
@@ -136,7 +111,7 @@ document.getElementById('formulario').addEventListener('submit', function(event)
                     pointStyle: 'circle'
                 },
                 {
-                    label: 'Relleno del Triángulo',
+                    label: 'Relleno del Círculo',
                     data: puntosRelleno.map(p => ({ x: p[0], y: p[1] })),
                     borderColor: 'rgba(255, 99, 132, 1)',
                     borderWidth: 1,
@@ -194,28 +169,70 @@ document.getElementById('formulario').addEventListener('submit', function(event)
             }
         });
 
-        const tablas = {
-            'tabla-puntos-ab': puntosAb,
-            'tabla-puntos-bc': puntosBc,
-            'tabla-puntos-ca': puntosCa
-        };
+        const octantHeaders = [
+            ["N", "Pk", "Xk+1", "Yk-1"],
+            ["Y", "X"],
+            ["X", "-Y"],
+            ["-Y", "X"],
+            ["-Y", "-X"],
+            ["-X", "-Y"],
+            ["-X", "Y"],
+            ["Y", "-X"]
+        ];
 
-        for (const [tablaId, puntos] of Object.entries(tablas)) {
-            const tbody = document.getElementById(tablaId).getElementsByTagName('tbody')[0];
+        for (let i = 0; i < 8; i++) {
+            const thead = document.getElementById(`tabla-octante-${i + 1}`).getElementsByTagName('thead')[0];
+            const tbody = document.getElementById(`tabla-octante-${i + 1}`).getElementsByTagName('tbody')[0];
+            thead.innerHTML = '';
             tbody.innerHTML = '';
+
+            const headerRow = thead.insertRow();
+            octantHeaders[i].forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+
             puntos.forEach((punto, index) => {
                 const row = tbody.insertRow();
                 row.style.animation = 'fadeIn 0.5s ease-in-out';
-                const cellIteracion = row.insertCell(0);
-                const cellX = row.insertCell(1);
-                const cellY = row.insertCell(2);
-                cellIteracion.textContent = index;
-                cellX.textContent = punto[0].toFixed(4);
-                cellY.textContent = punto[1].toFixed(4);
+                if (i === 0) {
+                    const cellIteracion = row.insertCell(0);
+                    const cellPk = row.insertCell(1);
+                    const cellX = row.insertCell(2);
+                    const cellY = row.insertCell(3);
+                    cellIteracion.textContent = index;
+                    cellPk.textContent = punto[2];
+                    cellX.textContent = punto[0] + 1;
+                    cellY.textContent = punto[1];
+                } else {
+                    const cellX = row.insertCell(0);
+                    const cellY = row.insertCell(1);
+                    if (i === 1) {
+                        cellX.textContent = punto[1];
+                        cellY.textContent = punto[0];
+                    } else if (i === 2) {
+                        cellX.textContent = punto[0];
+                        cellY.textContent = -punto[1];
+                    } else if (i === 3) {
+                        cellX.textContent = -punto[1];
+                        cellY.textContent = punto[0];
+                    } else if (i === 4) {
+                        cellX.textContent = -punto[1];
+                        cellY.textContent = -punto[0];
+                    } else if (i === 5) {
+                        cellX.textContent = -punto[0];
+                        cellY.textContent = -punto[1];
+                    } else if (i === 6) {
+                        cellX.textContent = -punto[0];
+                        cellY.textContent = punto[1];
+                    } else if (i === 7) {
+                        cellX.textContent = punto[1];
+                        cellY.textContent = -punto[0];
+                    }
+                }
             });
         }
-
-        document.getElementById('caso-determinado').textContent = `Casos: AB - ${casos.AB}, BC - ${casos.BC}, CA - ${casos.CA}`;
     })
     .catch(error => {
         console.error('Error:', error);
