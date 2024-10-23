@@ -97,7 +97,7 @@ document.getElementById('formulario').addEventListener('submit', function(event)
             data: {
                 datasets: [{
                     label: 'Borde del Círculo',
-                    data: puntosBorde.map(p => ({ x: p[0], y: p[1] })),
+                    data: [],
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 2,
                     showLine: false,
@@ -112,7 +112,7 @@ document.getElementById('formulario').addEventListener('submit', function(event)
                 },
                 {
                     label: 'Relleno del Círculo',
-                    data: puntosRelleno.map(p => ({ x: p[0], y: p[1] })),
+                    data: [],
                     borderColor: 'rgba(255, 99, 132, 1)',
                     borderWidth: 1,
                     showLine: false,
@@ -162,12 +162,28 @@ document.getElementById('formulario').addEventListener('submit', function(event)
                     }
                 },
                 animation: {
-                    onComplete: function() {
-                        document.getElementById('loading').style.display = 'none';
-                    }
+                    duration: 0 // Disable default animation
                 }
             }
         });
+
+        // Animate drawing the circle point by point
+        let index = 0;
+        const drawNextPoint = () => {
+            if (index < puntosBorde.length) {
+                window.myChart.data.datasets[0].data.push({ x: puntosBorde[index][0], y: puntosBorde[index][1] });
+                window.myChart.update();
+                index++;
+                requestAnimationFrame(drawNextPoint);
+            } else {
+                // Draw the fill points after the border is complete
+                puntosRelleno.forEach(p => {
+                    window.myChart.data.datasets[1].data.push({ x: p[0], y: p[1] });
+                });
+                window.myChart.update();
+            }
+        };
+        drawNextPoint();
 
         const octantHeaders = [
             ["N", "Pk", "Xk+1", "Yk-1"],
