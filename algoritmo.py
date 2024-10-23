@@ -5,6 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 
+# Función para trazar puntos en los octantes del círculo
 def trazar_puntos_circulo(Xc, Yc, x, y, octantes):
     octantes[0].append((Xc + x, Yc + y))
     octantes[1].append((Xc - x, Yc + y))
@@ -15,6 +16,7 @@ def trazar_puntos_circulo(Xc, Yc, x, y, octantes):
     octantes[6].append((Xc + y, Yc - x))
     octantes[7].append((Xc - y, Yc - x))
 
+# Algoritmo del punto medio para dibujar un círculo
 def algoritmo_punto_medio_circulo(Xc, Yc, r):
     x = 0
     y = r
@@ -36,6 +38,7 @@ def algoritmo_punto_medio_circulo(Xc, Yc, r):
 
     return puntos, octantes
 
+# Algoritmo DDA para dibujar una línea
 def linea_dda(x0, y0, x1, y1):
     puntos = []
     dx = x1 - x0
@@ -51,6 +54,7 @@ def linea_dda(x0, y0, x1, y1):
         y += incremento_y
     return puntos
 
+# Función para rellenar el círculo
 def rellenar_circulo(puntos_borde, Xc, Yc):
     puntos_relleno = set(puntos_borde)
     y_min = min(p[1] for p in puntos_borde)
@@ -65,15 +69,16 @@ def rellenar_circulo(puntos_borde, Xc, Yc):
 
     return puntos_relleno
 
+# Función para imprimir las tablas de puntos calculados
 def imprimir_tablas(puntos, Xc, Yc):
     root = tk.Tk()
     root.title("Tablas de Puntos Calculados")
 
-    # Get screen width and height
+    # Obtener el ancho y alto de la pantalla
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
 
-    # Set window size and position
+    # Establecer el tamaño y posición de la ventana
     window_width = screen_width // 2
     window_height = screen_height // 2
     root.geometry(f"{window_width}x{window_height}+{screen_width - window_width}+0")
@@ -127,6 +132,7 @@ def imprimir_tablas(puntos, Xc, Yc):
 
     root.mainloop()
 
+# Función para graficar el círculo de manera animada
 def graficar_circulo_animado(puntos_relleno, puntos_borde, Xc, Yc, r):
     fig, ax = plt.subplots()
     ax.set_aspect('equal', adjustable='box')
@@ -160,9 +166,10 @@ def graficar_circulo_animado(puntos_relleno, puntos_borde, Xc, Yc, r):
 
     ani = animation.FuncAnimation(fig, animate, init_func=init, frames=len(x_vals_relleno), interval=50, blit=True)
 
-    # Show the plot
+    # Mostrar la gráfica
     plt.show()
 
+# Función para solicitar los parámetros del círculo al usuario
 def solicitar_parametros():
     def obtener_parametros():
         Xc = entry_Xc.get()
@@ -203,7 +210,7 @@ def solicitar_parametros():
     root = tk.Tk()
     root.title("Parámetros del Círculo")
 
-    # Center the input window on the screen
+    # Centrar la ventana de entrada en la pantalla
     window_width = 300
     window_height = 150
     screen_width = root.winfo_screenwidth()
@@ -231,6 +238,7 @@ def solicitar_parametros():
 
     root.mainloop()
 
+# Función principal
 def main():
     # Solicitar al usuario los parámetros del círculo
     solicitar_parametros()
