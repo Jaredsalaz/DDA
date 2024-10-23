@@ -167,23 +167,29 @@ document.getElementById('formulario').addEventListener('submit', function(event)
             }
         });
 
-        // Animate drawing the circle point by point
+        // Animate drawing the circle border point by point
         let index = 0;
-        const drawNextPoint = () => {
+        const drawNextBorderPoint = () => {
             if (index < puntosBorde.length) {
                 window.myChart.data.datasets[0].data.push({ x: puntosBorde[index][0], y: puntosBorde[index][1] });
                 window.myChart.update();
                 index++;
-                requestAnimationFrame(drawNextPoint);
+                setTimeout(drawNextBorderPoint, 10); // Add a delay of 100ms between each point
             } else {
-                // Draw the fill points after the border is complete
-                puntosRelleno.forEach(p => {
-                    window.myChart.data.datasets[1].data.push({ x: p[0], y: p[1] });
-                });
-                window.myChart.update();
+                // Animate drawing the circle fill point by point
+                let fillIndex = 0;
+                const drawNextFillPoint = () => {
+                    if (fillIndex < puntosRelleno.length) {
+                        window.myChart.data.datasets[1].data.push({ x: puntosRelleno[fillIndex][0], y: puntosRelleno[fillIndex][1] });
+                        window.myChart.update();
+                        fillIndex++;
+                        setTimeout(drawNextFillPoint, 10); // Add a delay of 100ms between each point
+                    }
+                };
+                drawNextFillPoint();
             }
         };
-        drawNextPoint();
+        drawNextBorderPoint();
 
         const octantHeaders = [
             ["N", "Pk", "Xk+1", "Yk-1"],
