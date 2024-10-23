@@ -249,10 +249,11 @@ document.getElementById('formulario').addEventListener('submit', function(event)
                         },
                         zoom: {
                             wheel: {
-                                enabled: false
+                                enabled: true, // Habilitar el zoom con la rueda del ratón
+                                speed: 0.1 // Ajustar la velocidad del zoom
                             },
                             pinch: {
-                                enabled: true
+                                enabled: true // Habilitar el zoom con el gesto de pellizco
                             },
                             mode: 'xy'
                         }
@@ -261,16 +262,23 @@ document.getElementById('formulario').addEventListener('submit', function(event)
                 scales: {
                     x: {
                         type: 'linear',
-                        position: 'bottom'
+                        position: 'bottom',
+                        ticks: {
+                            stepSize: 1 // Ajuste para que los puntos se dibujen por píxel
+                        }
                     },
                     y: {
                         type: 'linear',
-                        position: 'left'
+                        position: 'left',
+                        ticks: {
+                            stepSize: 1 // Ajuste para que los puntos se dibujen por píxel
+                        }
                     }
                 },
                 animation: {
                     duration: 0 // Desactivar la animación predeterminada
-                }
+                },
+                aspectRatio: 1 // Mantener la proporción 1:1 para evitar el efecto de elipse
             }
         });
 

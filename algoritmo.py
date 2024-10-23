@@ -36,7 +36,15 @@ def algoritmo_punto_medio_circulo(Xc, Yc, r):
         puntos.append((x, y, p))
         trazar_puntos_circulo(Xc, Yc, x, y, octantes)
 
-    return puntos, octantes
+    # Añadir puntos adicionales para mejorar la precisión
+    puntos_finos = []
+    for (x, y, p) in puntos:
+        puntos_finos.append((x, y, p))
+        puntos_finos.append((x + 0.5, y, p))
+        puntos_finos.append((x, y + 0.5, p))
+        puntos_finos.append((x + 0.5, y + 0.5, p))
+        
+    return puntos_finos, octantes
 
 # Algoritmo DDA para dibujar una línea
 def linea_dda(x0, y0, x1, y1):
