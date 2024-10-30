@@ -291,7 +291,7 @@ document.getElementById('formulario').addEventListener('submit', function(event)
                     window.myChart.data.datasets[octantIndex].data.push({ x: points[pointIndex][0], y: points[pointIndex][1] });
                     window.myChart.update();
                     pointIndex++;
-                    setTimeout(drawNextPoint, 100); // Añadir un retraso de 100ms entre cada punto
+                    setTimeout(drawNextPoint, 5); // Añadir un retraso de 100ms entre cada punto
                 } else if (octantIndex < 7) {
                     drawOctant(octantIndex + 1);
                 } else {
@@ -302,7 +302,7 @@ document.getElementById('formulario').addEventListener('submit', function(event)
                             window.myChart.data.datasets[8].data.push({ x: puntosRelleno[fillIndex][0], y: puntosRelleno[fillIndex][1] });
                             window.myChart.update();
                             fillIndex++;
-                            setTimeout(drawNextFillPoint, 10); // Añadir un retraso de 100ms entre cada punto
+                            setTimeout(drawNextFillPoint, 1); // Añadir un retraso de 100ms entre cada punto
                         }
                     };
                     drawNextFillPoint();
@@ -338,6 +338,11 @@ document.getElementById('formulario').addEventListener('submit', function(event)
             });
 
             puntos.forEach((punto, index) => {
+                // Filtrar puntos con valores .5
+                if (punto[0] % 1 !== 0 || punto[1] % 1 !== 0) {
+                    return;
+                }
+
                 const row = tbody.insertRow();
                 row.style.animation = 'fadeIn 0.5s ease-in-out';
                 if (i === 0) {

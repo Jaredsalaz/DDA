@@ -1,0 +1,113 @@
+@startuml
+start
+
+:Importar bibliotecas;
+:Definir función trazar_puntos_circulo;
+:Definir función algoritmo_punto_medio_circulo;
+:Definir función linea_dda;
+:Definir función rellenar_circulo;
+:Definir función imprimir_tablas;
+:Definir función graficar_circulo_animado;
+:Definir función solicitar_parametros;
+:Definir función main;
+
+if (Ejecutar como script principal) then (yes)
+    :Llamar a la función main;
+    :Solicitar parámetros del círculo;
+    :Obtener parámetros del usuario;
+    if (Parámetros válidos) then (yes)
+        :Llamar a algoritmo_punto_medio_circulo;
+        :Llamar a rellenar_circulo;
+        :Crear hilos para imprimir_tablas y graficar_circulo_animado;
+        :Iniciar hilos;
+    else (no)
+        :Mostrar mensaje de error;
+    endif
+else (no)
+    stop
+endif
+
+stop
+
+:Definir función trazar_puntos_circulo;
+start
+:Agregar puntos a los octantes;
+stop
+
+:Definir función algoritmo_punto_medio_circulo;
+start
+:Inicializar variables;
+:trazar_puntos_circulo(Xc, Yc, x, y, octantes);
+while (x < y) is (true)
+    :Incrementar x;
+    if (p < 0) then (yes)
+        :p = p + 2 * x + 1;
+    else (no)
+        :Decrementar y;
+        :p = p + 2 * x + 1 - 2 * y;
+    endif
+    :Añadir (x, y, p) a puntos;
+    :trazar_puntos_circulo(Xc, Yc, x, y, octantes);
+endwhile
+:Mejorar precisión de puntos;
+:return puntos_finos, octantes;
+stop
+
+:Definir función linea_dda;
+start
+:Inicializar variables;
+for (i = 0; i <= pasos; i++)
+    :Añadir punto a la lista;
+    :Incrementar x e y;
+endfor
+:return puntos;
+stop
+
+:Definir función rellenar_circulo;
+start
+:Inicializar puntos_relleno;
+:Calcular y_min y y_max;
+for (y = y_min; y <= y_max; y++)
+    :Obtener puntos_en_y;
+    if (len(puntos_en_y) > 1) then (yes)
+        :Calcular x_min y x_max;
+        :Actualizar puntos_relleno con linea_dda;
+    endif
+endfor
+:return puntos_relleno;
+stop
+
+:Definir función imprimir_tablas;
+start
+:Crear ventana de Tkinter;
+:Configurar pestañas y tablas;
+for (i = 0; i < 8; i++)
+    :Agregar datos a las tablas;
+endfor
+:Mostrar ventana;
+stop
+
+:Definir función graficar_circulo_animado;
+start
+:Configurar gráfica de Matplotlib;
+:Inicializar animación;
+:Definir función init;
+:Definir función animate;
+:Iniciar animación;
+:Mostrar gráfica;
+stop
+
+:Definir función solicitar_parametros;
+start
+:Crear ventana de Tkinter;
+:Configurar campos de entrada;
+:Definir función obtener_parametros;
+:Definir función focus_next_widget;
+:Mostrar ventana;
+stop
+
+:Definir función main;
+start
+:Solicitar parámetros del círculo;
+stop
+@enduml
