@@ -5,46 +5,59 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 
-# Función para trazar puntos en los octantes del círculo
-def trazar_puntos_circulo(Xc, Yc, x, y, octantes):
-    octantes[0].append((Xc + x, Yc + y))
-    octantes[1].append((Xc - x, Yc + y))
-    octantes[2].append((Xc + x, Yc - y))
-    octantes[3].append((Xc - x, Yc - y))
-    octantes[4].append((Xc + y, Yc + x))
-    octantes[5].append((Xc - y, Yc + x))
-    octantes[6].append((Xc + y, Yc - x))
-    octantes[7].append((Xc - y, Yc - x))
+# Función para trazar puntos en los octantes de la elipse
+def trazar_puntos_elipse(Xc, Yc, x, y, puntos):
+    puntos.append((Xc + x, Yc + y))
+    puntos.append((Xc - x, Yc + y))
+    puntos.append((Xc + x, Yc - y))
+    puntos.append((Xc - x, Yc - y))
 
-# Algoritmo del punto medio para dibujar un círculo
-def algoritmo_punto_medio_circulo(Xc, Yc, r):
+# Algoritmo del punto medio para dibujar una elipse
+def algoritmo_punto_medio_elipse(Xc, Yc, Rx, Ry):
+    puntos = []
+    region1 = []
+    region2 = []
+
+    # Región 1
     x = 0
-    y = r
-    p = 1 - r
-    puntos = [(x, y, p)]
-    octantes = [[] for _ in range(8)]
+    y = Ry
+    Rx2 = Rx * Rx
+    Ry2 = Ry * Ry
+    p1 = Ry2 - (Rx2 * Ry) + (0.25 * Rx2)
+    dx = 2 * Ry2 * x
+    dy = 2 * Rx2 * y
 
-    trazar_puntos_circulo(Xc, Yc, x, y, octantes)
+    trazar_puntos_elipse(Xc, Yc, x, y, puntos)
+    region1.append((x, y, p1))
 
-    while x < y:
+    while dx < dy:
         x += 1
-        if p < 0:
-            p = p + 2 * x + 1
+        dx += 2 * Ry2
+        if p1 < 0:
+            p1 += dx + Ry2
         else:
             y -= 1
-            p = p + 2 * x + 1 - 2 * y
-        puntos.append((x, y, p))
-        trazar_puntos_circulo(Xc, Yc, x, y, octantes)
+            dy -= 2 * Rx2
+            p1 += dx - dy + Ry2
+        trazar_puntos_elipse(Xc, Yc, x, y, puntos)
+        region1.append((x, y, p1))
 
-    # Añadir puntos adicionales para mejorar la precisión
-    puntos_finos = []
-    for (x, y, p) in puntos:
-        puntos_finos.append((x, y, p))
-        puntos_finos.append((x + 0.5, y, p))
-        puntos_finos.append((x, y + 0.5, p))
-        puntos_finos.append((x + 0.5, y + 0.5, p))
-        
-    return puntos_finos, octantes
+    # Región 2
+    p2 = (Ry2 * (x + 0.5) * (x + 0.5)) + (Rx2 * (y - 1) * (y - 1)) - (Rx2 * Ry2)
+
+    while y > 0:
+        y -= 1
+        dy -= 2 * Rx2
+        if p2 > 0:
+            p2 += Rx2 - dy
+        else:
+            x += 1
+            dx += 2 * Ry2
+            p2 += dx - dy + Rx2
+        trazar_puntos_elipse(Xc, Yc, x, y, puntos)
+        region2.append((x, y, p2))
+
+    return puntos, region1, region2
 
 # Algoritmo DDA para dibujar una línea
 def linea_dda(x0, y0, x1, y1):
@@ -62,8 +75,8 @@ def linea_dda(x0, y0, x1, y1):
         y += incremento_y
     return puntos
 
-# Función para rellenar el círculo
-def rellenar_circulo(puntos_borde, Xc, Yc):
+# Función para rellenar la elipse
+def rellenar_elipse(puntos_borde, Xc, Yc):
     puntos_relleno = set(puntos_borde)
     y_min = min(p[1] for p in puntos_borde)
     y_max = max(p[1] for p in puntos_borde)
@@ -78,7 +91,7 @@ def rellenar_circulo(puntos_borde, Xc, Yc):
     return puntos_relleno
 
 # Función para imprimir las tablas de puntos calculados
-def imprimir_tablas(puntos, Xc, Yc):
+def imprimir_tablas(region1, region2, Xc, Yc):
     root = tk.Tk()
     root.title("Tablas de Puntos Calculados")
 
@@ -93,60 +106,38 @@ def imprimir_tablas(puntos, Xc, Yc):
 
     tab_control = ttk.Notebook(root)
 
-    tabs = []
-    nombres_octantes = ["N Pk Xk+1 Yk-1", "Y X", "X -Y", "-Y X", "-Y -X", "-X -Y", "-X Y", "Y -X"]
-    for i in range(8):
-        tab = ttk.Frame(tab_control)
-        tab_control.add(tab, text=nombres_octantes[i])
-        tabs.append(tab)
-
+    tab1 = ttk.Frame(tab_control)
+    tab2 = ttk.Frame(tab_control)
+    tab_control.add(tab1, text="Región 1")
+    tab_control.add(tab2, text="Región 2")
     tab_control.pack(expand=1, fill='both')
 
-    for i, tab in enumerate(tabs):
-        if i == 0:
-            headers = ["N", "Pk", "Xk+1", "Yk-1"]
-        else:
-            headers = ["Xk+1", "Yk-1"]
-        
-        tree = ttk.Treeview(tab, columns=headers, show='headings')
-        for header in headers:
-            tree.heading(header, text=header)
-            tree.column(header, anchor='center')
-        tree.pack(expand=1, fill='both')
+    headers = ["K", "Pk", "Xk+1", "Yk-1"]
+    tree1 = ttk.Treeview(tab1, columns=headers, show='headings')
+    tree2 = ttk.Treeview(tab2, columns=headers, show='headings')
+    for header in headers:
+        tree1.heading(header, text=header)
+        tree1.column(header, anchor='center')
+        tree2.heading(header, text=header)
+        tree2.column(header, anchor='center')
+    tree1.pack(expand=1, fill='both')
+    tree2.pack(expand=1, fill='both')
 
-        for j, (x, y, p) in enumerate(puntos):
-            if i == 0:
-                if j == 0:
-                    tree.insert("", "end", values=(j, p, x + 1, y))
-                else:
-                    if puntos[j-1][2] < 0:
-                        tree.insert("", "end", values=(j, p, x + 1, y))
-                    else:
-                        tree.insert("", "end", values=(j, p, x + 1, y - 1))
-            elif i == 1:
-                tree.insert("", "end", values=(y, x))
-            elif i == 2:
-                tree.insert("", "end", values=(x, -y))
-            elif i == 3:
-                tree.insert("", "end", values=(-y, x))
-            elif i == 4:
-                tree.insert("", "end", values=(-y, -x))
-            elif i == 5:
-                tree.insert("", "end", values=(-x, -y))
-            elif i == 6:
-                tree.insert("", "end", values=(-x, y))
-            elif i == 7:
-                tree.insert("", "end", values=(y, -x))
+    for k, (x, y, p) in enumerate(region1):
+        tree1.insert("", "end", values=(k, p, x + 1, y))
+
+    for k, (x, y, p) in enumerate(region2):
+        tree2.insert("", "end", values=(k, p, x, y - 1))
 
     root.mainloop()
 
-# Función para graficar el círculo de manera animada
-def graficar_circulo_animado(puntos_relleno, puntos_borde, Xc, Yc, r):
+# Función para graficar la elipse de manera animada
+def graficar_elipse_animada(puntos_relleno, puntos_borde, Xc, Yc, Rx, Ry):
     fig, ax = plt.subplots()
     ax.set_aspect('equal', adjustable='box')
     ax.grid(True)
-    ax.set_xlim(Xc - r - 1, Xc + r + 1)
-    ax.set_ylim(Yc - r - 1, Yc + r + 1)
+    ax.set_xlim(Xc - Rx - 1, Xc + Rx + 1)
+    ax.set_ylim(Yc - Ry - 1, Yc + Ry + 1)
 
     x_vals_relleno = [p[0] for p in puntos_relleno]
     y_vals_relleno = [p[1] for p in puntos_relleno]
@@ -158,7 +149,7 @@ def graficar_circulo_animado(puntos_relleno, puntos_borde, Xc, Yc, r):
     borde = ax.scatter([], [], color='b')
 
     plt.figtext(0.5, 0.98, 'Hecho por Jared Salazar', ha='center', fontsize=8)
-    plt.figtext(0.5, 0.95, f'Centro: ({Xc}, {Yc})  Radio: {r}', ha='center', fontsize=12)
+    plt.figtext(0.5, 0.95, f'Centro: ({Xc}, {Yc})  Rx: {Rx}  Ry: {Ry}', ha='center', fontsize=12)
 
     def init():
         relleno.set_offsets(np.empty((0, 2)))
@@ -177,28 +168,26 @@ def graficar_circulo_animado(puntos_relleno, puntos_borde, Xc, Yc, r):
     # Mostrar la gráfica
     plt.show()
 
-# Función para solicitar los parámetros del círculo al usuario
+# Función para solicitar los parámetros de la elipse al usuario
 def solicitar_parametros():
     def obtener_parametros():
         Xc = entry_Xc.get()
         Yc = entry_Yc.get()
-        r = entry_r.get()
+        Rx = entry_Rx.get()
+        Ry = entry_Ry.get()
         
         # Verificamos si los valores son válidos
         try:
-            Xc, Yc, r = int(Xc), int(Yc), int(r)
-            print(f"Centro: ({Xc}, {Yc}), Radio: {r}")
+            Xc, Yc, Rx, Ry = int(Xc), int(Yc), int(Rx), int(Ry)
+            print(f"Centro: ({Xc}, {Yc}), Rx: {Rx}, Ry: {Ry}")
             
             # Llamar al algoritmo principal con los parámetros
-            puntos, octantes = algoritmo_punto_medio_circulo(Xc, Yc, r)
-            puntos_borde = set()
-            for octante in octantes:
-                puntos_borde.update(octante)
-            puntos_relleno = rellenar_circulo(puntos_borde, Xc, Yc)
+            puntos_borde, region1, region2 = algoritmo_punto_medio_elipse(Xc, Yc, Rx, Ry)
+            puntos_relleno = rellenar_elipse(puntos_borde, Xc, Yc)
 
             # Ejecutar funciones en paralelo
-            hilo_tablas = threading.Thread(target=imprimir_tablas, args=(puntos, Xc, Yc))
-            hilo_animacion = threading.Thread(target=graficar_circulo_animado, args=(puntos_relleno, puntos_borde, Xc, Yc, r))
+            hilo_tablas = threading.Thread(target=imprimir_tablas, args=(region1, region2, Xc, Yc))
+            hilo_animacion = threading.Thread(target=graficar_elipse_animada, args=(puntos_relleno, puntos_borde, Xc, Yc, Rx, Ry))
 
             hilo_tablas.start()
             hilo_animacion.start()
@@ -209,18 +198,19 @@ def solicitar_parametros():
         # Limpiar los campos de entrada para nuevos valores
         entry_Xc.delete(0, tk.END)
         entry_Yc.delete(0, tk.END)
-        entry_r.delete(0, tk.END)
+        entry_Rx.delete(0, tk.END)
+        entry_Ry.delete(0, tk.END)
 
     def focus_next_widget(event):
         event.widget.tk_focusNext().focus()
         return "break"
 
     root = tk.Tk()
-    root.title("Parámetros del Círculo")
+    root.title("Parámetros de la Elipse")
 
     # Centrar la ventana de entrada en la pantalla
     window_width = 300
-    window_height = 150
+    window_height = 200
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
     position_top = int(screen_height / 2 - window_height / 2)
@@ -237,18 +227,23 @@ def solicitar_parametros():
     entry_Yc.grid(row=1, column=1)
     entry_Yc.bind("<Return>", focus_next_widget)
 
-    tk.Label(root, text="Radio:").grid(row=2, column=0)
-    entry_r = tk.Entry(root)
-    entry_r.grid(row=2, column=1)
-    entry_r.bind("<Return>", focus_next_widget)
+    tk.Label(root, text="Radio X (Rx):").grid(row=2, column=0)
+    entry_Rx = tk.Entry(root)
+    entry_Rx.grid(row=2, column=1)
+    entry_Rx.bind("<Return>", focus_next_widget)
 
-    tk.Button(root, text="Aceptar", command=obtener_parametros).grid(row=3, columnspan=2)
+    tk.Label(root, text="Radio Y (Ry):").grid(row=3, column=0)
+    entry_Ry = tk.Entry(root)
+    entry_Ry.grid(row=3, column=1)
+    entry_Ry.bind("<Return>", focus_next_widget)
+
+    tk.Button(root, text="Aceptar", command=obtener_parametros).grid(row=4, columnspan=2)
 
     root.mainloop()
 
 # Función principal
 def main():
-    # Solicitar al usuario los parámetros del círculo
+    # Solicitar al usuario los parámetros de la elipse
     solicitar_parametros()
 
 if __name__ == "__main__":
