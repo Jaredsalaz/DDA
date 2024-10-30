@@ -18,42 +18,53 @@ def algoritmo_punto_medio_elipse(Xc, Yc, Rx, Ry):
     region1 = []
     region2 = []
 
-    # Región 1
-    x = 0
-    y = Ry
+    # Calculamos los cuadrados de Rx y Ry
     Rx2 = Rx * Rx
     Ry2 = Ry * Ry
+
+    # Punto inicial
+    x = 0
+    y = Ry
+
+    # Parámetro de decisión inicial para la Región 1
     p1 = Ry2 - (Rx2 * Ry) + (0.25 * Rx2)
     dx = 2 * Ry2 * x
     dy = 2 * Rx2 * y
 
+    # Guardamos el primer punto
     trazar_puntos_elipse(Xc, Yc, x, y, puntos)
     region1.append((x, y, p1))
 
+    # Región 1
     while dx < dy:
         x += 1
         dx += 2 * Ry2
+
         if p1 < 0:
             p1 += dx + Ry2
         else:
-            y -= 1
+            y -= 1        # Decrementamos y antes de almacenar
             dy -= 2 * Rx2
             p1 += dx - dy + Ry2
+
         trazar_puntos_elipse(Xc, Yc, x, y, puntos)
         region1.append((x, y, p1))
 
-    # Región 2
-    p2 = (Ry2 * (x + 0.5) * (x + 0.5)) + (Rx2 * (y - 1) * (y - 1)) - (Rx2 * Ry2)
+    # Parámetro de decisión inicial para la Región 2
+    p2 = Ry2 * (x + 0.5) ** 2 + Rx2 * (y - 1) ** 2 - Rx2 * Ry2
 
-    while y > 0:
+    # Región 2
+    while y >= 0:
         y -= 1
         dy -= 2 * Rx2
+
         if p2 > 0:
             p2 += Rx2 - dy
         else:
             x += 1
             dx += 2 * Ry2
             p2 += dx - dy + Rx2
+
         trazar_puntos_elipse(Xc, Yc, x, y, puntos)
         region2.append((x, y, p2))
 
@@ -112,7 +123,7 @@ def imprimir_tablas(region1, region2, Xc, Yc):
     tab_control.add(tab2, text="Región 2")
     tab_control.pack(expand=1, fill='both')
 
-    headers = ["K", "Pk", "Xk+1", "Yk-1"]
+    headers = ["K", "Pk", "Xk", "Yk"]
     tree1 = ttk.Treeview(tab1, columns=headers, show='headings')
     tree2 = ttk.Treeview(tab2, columns=headers, show='headings')
     for header in headers:
@@ -124,13 +135,13 @@ def imprimir_tablas(region1, region2, Xc, Yc):
     tree2.pack(expand=1, fill='both')
 
     for k, (x, y, p) in enumerate(region1):
-        tree1.insert("", "end", values=(k, p, x + 1, y))
+        tree1.insert("", "end", values=(k, p, x, y))
 
     for k, (x, y, p) in enumerate(region2):
-        tree2.insert("", "end", values=(k, p, x, y - 1))
+        tree2.insert("", "end", values=(k, p, x, y))
 
     root.mainloop()
-
+    
 # Función para graficar la elipse de manera animada
 def graficar_elipse_animada(puntos_relleno, puntos_borde, Xc, Yc, Rx, Ry):
     fig, ax = plt.subplots()
