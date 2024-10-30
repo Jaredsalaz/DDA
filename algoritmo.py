@@ -5,24 +5,14 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 
-# Función para trazar puntos en los octantes de la elipse
-def trazar_puntos_elipse(Xc, Yc, x, y, puntos):
-    puntos.append((Xc + x, Yc + y))
-    puntos.append((Xc - x, Yc + y))
-    puntos.append((Xc + x, Yc - y))
-    puntos.append((Xc - x, Yc - y))
-
 # Algoritmo del punto medio para dibujar una elipse
 def algoritmo_punto_medio_elipse(Xc, Yc, Rx, Ry):
     puntos = []
     region1 = []
     region2 = []
 
-    # Calculamos los cuadrados de Rx y Ry
     Rx2 = Rx * Rx
     Ry2 = Ry * Ry
-
-    # Punto inicial
     x = 0
     y = Ry
 
@@ -37,13 +27,14 @@ def algoritmo_punto_medio_elipse(Xc, Yc, Rx, Ry):
 
     # Región 1
     while dx < dy:
-        x += 1
-        dx += 2 * Ry2
-
         if p1 < 0:
+            x += 1
+            dx += 2 * Ry2
             p1 += dx + Ry2
         else:
-            y -= 1        # Decrementamos y antes de almacenar
+            x += 1
+            y -= 1
+            dx += 2 * Ry2
             dy -= 2 * Rx2
             p1 += dx - dy + Ry2
 
@@ -55,14 +46,15 @@ def algoritmo_punto_medio_elipse(Xc, Yc, Rx, Ry):
 
     # Región 2
     while y >= 0:
-        y -= 1
-        dy -= 2 * Rx2
-
         if p2 > 0:
+            y -= 1
+            dy -= 2 * Rx2
             p2 += Rx2 - dy
         else:
             x += 1
+            y -= 1
             dx += 2 * Ry2
+            dy -= 2 * Rx2
             p2 += dx - dy + Rx2
 
         trazar_puntos_elipse(Xc, Yc, x, y, puntos)
@@ -70,6 +62,13 @@ def algoritmo_punto_medio_elipse(Xc, Yc, Rx, Ry):
 
     return puntos, region1, region2
 
+# Función para trazar puntos en los octantes de la elipse
+def trazar_puntos_elipse(Xc, Yc, x, y, puntos):
+    puntos.append((Xc + x, Yc + y))
+    puntos.append((Xc - x, Yc + y))
+    puntos.append((Xc + x, Yc - y))
+    puntos.append((Xc - x, Yc - y))
+    
 # Algoritmo DDA para dibujar una línea
 def linea_dda(x0, y0, x1, y1):
     puntos = []
@@ -141,7 +140,7 @@ def imprimir_tablas(region1, region2, Xc, Yc):
         tree2.insert("", "end", values=(k, p, x, y))
 
     root.mainloop()
-    
+
 # Función para graficar la elipse de manera animada
 def graficar_elipse_animada(puntos_relleno, puntos_borde, Xc, Yc, Rx, Ry):
     fig, ax = plt.subplots()
