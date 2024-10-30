@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 
-# Algoritmo del punto medio para dibujar una elipse
+# Algoritmo del punto medio para dibujar un elipse
 def algoritmo_punto_medio_elipse(Xc, Yc, Rx, Ry):
     puntos = []
     region1 = []
@@ -16,7 +16,8 @@ def algoritmo_punto_medio_elipse(Xc, Yc, Rx, Ry):
     x = 0
     y = Ry
 
-    # Parámetro de decisión inicial para la Región 1
+    # 1. Parámetro de decisión inicial para la Región 1
+    # Fórmula: P1o = Ry^2 - Rx^2 * Ry + 0.25 * Rx^2
     p1 = Ry2 - (Rx2 * Ry) + (0.25 * Rx2)
     dx = 2 * Ry2 * x
     dy = 2 * Rx2 * y
@@ -28,10 +29,14 @@ def algoritmo_punto_medio_elipse(Xc, Yc, Rx, Ry):
     # Región 1
     while dx < dy:
         if p1 < 0:
+            # 2. Si Pk < 0, entonces (Xk+1, Yk)
+            # Fórmula: P1k+1 = P1k + 2 * Ry^2 * Xk+1 + Ry^2
             x += 1
             dx += 2 * Ry2
             p1 += dx + Ry2
         else:
+            # 3. Si Pk >= 0, entonces (Xk+1, Yk-1)
+            # Fórmula: P1k+1 = P1k + 2 * Ry^2 * Xk+1 - 2 * Rx^2 * Yk+1 + Ry^2
             x += 1
             y -= 1
             dx += 2 * Ry2
@@ -41,24 +46,32 @@ def algoritmo_punto_medio_elipse(Xc, Yc, Rx, Ry):
         trazar_puntos_elipse(Xc, Yc, x, y, puntos)
         region1.append((x, y, p1))
 
-    # Parámetro de decisión inicial para la Región 2
-    p2 = Ry2 * (x + 0.5) ** 2 + Rx2 * (y - 1) ** 2 - Rx2 * Ry2
+    # Comprobación antes de pasar a la Región 2
+    # Fórmula: Si 2 * Ry^2 * X >= 2 * Rx^2 * Y
+    if 2 * Ry2 * x >= 2 * Rx2 * y:
+        # 4. Parámetro de decisión inicial para la Región 2
+        # Fórmula: P2o = Ry^2 * (Xo + 0.5)^2 + Rx^2 * (Yo - 1)^2 - Rx^2 * Ry^2
+        p2 = Ry2 * (x + 0.5) ** 2 + Rx2 * (y - 1) ** 2 - Rx2 * Ry2
 
-    # Región 2
-    while y >= 0:
-        if p2 > 0:
-            y -= 1
-            dy -= 2 * Rx2
-            p2 += Rx2 - dy
-        else:
-            x += 1
-            y -= 1
-            dx += 2 * Ry2
-            dy -= 2 * Rx2
-            p2 += dx - dy + Rx2
+        # Región 2
+        while y >= 0:
+            if p2 > 0:
+                # 5. Si P2k > 0, entonces (Xk, Yk-1)
+                # Fórmula: P2k+1 = P2k - 2 * Rx^2 * Yk+1 + Rx^2
+                y -= 1
+                dy -= 2 * Rx2
+                p2 += Rx2 - dy
+            else:
+                # 6. Si P2k <= 0, entonces (Xk+1, Yk-1)
+                # Fórmula: P2k+1 = P2k + 2 * Ry^2 * Xk+1 - 2 * Rx^2 * Yk+1 + Rx^2
+                x += 1
+                y -= 1
+                dx += 2 * Ry2
+                dy -= 2 * Rx2
+                p2 += dx - dy + Rx2
 
-        trazar_puntos_elipse(Xc, Yc, x, y, puntos)
-        region2.append((x, y, p2))
+            trazar_puntos_elipse(Xc, Yc, x, y, puntos)
+            region2.append((x, y, p2))
 
     return puntos, region1, region2
 
@@ -68,7 +81,7 @@ def trazar_puntos_elipse(Xc, Yc, x, y, puntos):
     puntos.append((Xc - x, Yc + y))
     puntos.append((Xc + x, Yc - y))
     puntos.append((Xc - x, Yc - y))
-    
+
 # Algoritmo DDA para dibujar una línea
 def linea_dda(x0, y0, x1, y1):
     puntos = []
