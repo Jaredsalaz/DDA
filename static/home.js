@@ -180,10 +180,10 @@ document.getElementById('formulario').addEventListener('submit', function(event)
         // Llenar tabla de la Región 1
         const tablaRegion1 = document.getElementById('tabla-region-1').getElementsByTagName('tbody')[0];
         tablaRegion1.innerHTML = '';
-        region1.forEach((punto, index) => {
+        region1.slice(1).forEach((punto, index) => { // Ignorar el primer punto
             const row = tablaRegion1.insertRow();
-            row.insertCell(0).innerText = index;
-            row.insertCell(1).innerText = punto[2];
+            row.insertCell(0).innerText = index + 1; // Ajustar el índice para que comience en 1
+            row.insertCell(1).innerText = region1[index][2]; // Pk del punto anterior
             row.insertCell(2).innerText = punto[0];
             row.insertCell(3).innerText = punto[1];
         });
