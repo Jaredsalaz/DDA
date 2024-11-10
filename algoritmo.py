@@ -5,6 +5,9 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 
+# Se progrmar en python pero nunca pude programar una cita con la chica que me gusta :(
+# Se declarar funciones pero nuca pude declarar mi amor por ella :(
+
 # Algoritmo del punto medio para dibujar un elipse
 def algoritmo_punto_medio_elipse(Xc, Yc, Rx, Ry):
     puntos = []
@@ -22,7 +25,7 @@ def algoritmo_punto_medio_elipse(Xc, Yc, Rx, Ry):
     dx = 2 * Ry2 * x
     dy = 2 * Rx2 * y
 
-    # Guardamos el primer punto
+    # Guardamos el primer punto con los valores iniciales
     trazar_puntos_elipse(Xc, Yc, x, y, puntos)
     region1.append((x, y, p1))
 
@@ -50,7 +53,7 @@ def algoritmo_punto_medio_elipse(Xc, Yc, Rx, Ry):
     # Fórmula: Si 2 * Ry^2 * X >= 2 * Rx^2 * Y
     if 2 * Ry2 * x >= 2 * Rx2 * y:
         # 4. Parámetro de decisión inicial para la Región 2
-        # Fórmula: P2o = Ry^2 * (Xo + 0.5)^2 + Rx^2 * (Yo - 1)^2 - Rx^2 * Ry^2
+        # Fórmula: P2o = Ry^2 * (Xo + 0.5)^2 + Rx^2 * (Yo - 1) ** 2 - Rx^2 * Ry^2
         p2 = Ry2 * (x + 0.5) ** 2 + Rx2 * (y - 1) ** 2 - Rx2 * Ry2
 
         # Región 2

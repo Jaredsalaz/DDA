@@ -1,13 +1,11 @@
 from flask import Flask, render_template, request, jsonify
 import json
 from algoritmo import (
-    trazar_puntos_circulo,
-    algoritmo_punto_medio_circulo,
+    algoritmo_punto_medio_elipse,
     linea_dda,
-    rellenar_circulo,
+    rellenar_elipse,
     imprimir_tablas,
-    graficar_circulo_animado,
-    solicitar_parametros
+    graficar_elipse_animada
 )
 import webbrowser
 from threading import Timer
@@ -21,26 +19,25 @@ def home():
     # Renderiza la plantilla 'home.html' cuando se accede a la ruta principal
     return render_template('home.html')
 
-# Define la ruta para calcular los puntos del círculo usando el método del punto medio
-@app.route('/calcular_puntos_circulo', methods=['POST'])
-def calcular_puntos_circulo():
+# Define la ruta para calcular los puntos de la elipse usando el método del punto medio
+@app.route('/calcular_puntos_elipse', methods=['POST'])
+def calcular_puntos_elipse():
     # Carga los datos JSON enviados en la solicitud POST
     data = json.loads(request.data)
     Xc = int(data['Xc'])
     Yc = int(data['Yc'])
-    r = int(data['r'])
+    Rx = int(data['Rx'])
+    Ry = int(data['Ry'])
     
-    # Llama a la función para calcular los puntos del círculo usando el algoritmo del punto medio
-    puntos, octantes = algoritmo_punto_medio_circulo(Xc, Yc, r)
-    puntos_borde = set()
-    for octante in octantes:
-        puntos_borde.update(octante)
-    puntos_relleno = rellenar_circulo(puntos_borde, Xc, Yc)
+    # Llama a la función para calcular los puntos de la elipse usando el algoritmo del punto medio
+    puntos_borde, region1, region2 = algoritmo_punto_medio_elipse(Xc, Yc, Rx, Ry)
+    puntos_relleno = rellenar_elipse(puntos_borde, Xc, Yc)
     
     # Devuelve los puntos en formato JSON
     return jsonify({
-        'puntos': puntos,
-        'octantes': [list(octante) for octante in octantes],
+        'puntos_borde': list(puntos_borde),
+        'region1': region1,
+        'region2': region2,
         'puntos_relleno': list(puntos_relleno)
     })
 

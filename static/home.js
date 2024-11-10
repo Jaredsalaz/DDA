@@ -10,10 +10,8 @@ document.getElementById('clear-button').addEventListener('click', function() {
     }
 
     // Limpiar las tablas
-    for (let i = 1; i <= 8; i++) {
-        const tbody = document.getElementById(`tabla-octante-${i}`).getElementsByTagName('tbody')[0];
-        tbody.innerHTML = '';
-    }
+    document.getElementById('tabla-region-1').getElementsByTagName('tbody')[0].innerHTML = '';
+    document.getElementById('tabla-region-2').getElementsByTagName('tbody')[0].innerHTML = '';
 });
 
 // Animaciones de las cortinas de bienvenida
@@ -60,7 +58,8 @@ document.getElementById('formulario').addEventListener('submit', function(event)
 
     const Xc = parseFloat(document.getElementById('xc').value);
     const Yc = parseFloat(document.getElementById('yc').value);
-    const r = parseFloat(document.getElementById('r').value);
+    const Rx = parseFloat(document.getElementById('rx').value);
+    const Ry = parseFloat(document.getElementById('ry').value);
 
     const audio = document.getElementById('audio-siiuuu');
     audio.play().then(() => {
@@ -71,19 +70,20 @@ document.getElementById('formulario').addEventListener('submit', function(event)
 
     document.getElementById('loading').style.display = 'block';
 
-    fetch('/calcular_puntos_circulo', {
+    fetch('/calcular_puntos_elipse', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ Xc, Yc, r })
+        body: JSON.stringify({ Xc, Yc, Rx, Ry })
     })
     .then(response => response.json())
     .then(data => {
         document.getElementById('loading').style.display = 'none';
 
-        const puntos = data.puntos;
-        const octantes = data.octantes;
+        const puntosBorde = data.puntos_borde;
+        const region1 = data.region1;
+        const region2 = data.region2;
         const puntosRelleno = data.puntos_relleno;
 
         const ctx = document.getElementById('grafica').getContext('2d');
@@ -97,23 +97,8 @@ document.getElementById('formulario').addEventListener('submit', function(event)
             data: {
                 datasets: [
                     {
-                        label: 'Octante 1',
-                        data: [],
-                        borderColor: 'rgba(255, 99, 132, 1)', // Rojo
-                        borderWidth: 2,
-                        showLine: false,
-                        fill: false,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-                        pointHoverBackgroundColor: 'rgba(255, 99, 132, 1)',
-                        pointHoverBorderColor: 'rgba(255, 99, 132, 1)',
-                        pointHoverBorderWidth: 2,
-                        pointStyle: 'circle'
-                    },
-                    {
-                        label: 'Octante 2',
-                        data: [],
+                        label: 'Borde',
+                        data: puntosBorde.map(p => ({ x: p[0], y: p[1] })),
                         borderColor: 'rgba(54, 162, 235, 1)', // Azul
                         borderWidth: 2,
                         showLine: false,
@@ -127,98 +112,8 @@ document.getElementById('formulario').addEventListener('submit', function(event)
                         pointStyle: 'circle'
                     },
                     {
-                        label: 'Octante 3',
-                        data: [],
-                        borderColor: 'rgba(255, 255, 255, 1)', // Blanco
-                        borderWidth: 2,
-                        showLine: false,
-                        fill: false,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                        pointBackgroundColor: 'rgba(255, 255, 255, 1)',
-                        pointHoverBackgroundColor: 'rgba(255, 255, 255, 1)',
-                        pointHoverBorderColor: 'rgba(255, 255, 255, 1)',
-                        pointHoverBorderWidth: 2,
-                        pointStyle: 'circle'
-                    },
-                    {
-                        label: 'Octante 4',
-                        data: [],
-                        borderColor: 'rgba(153, 102, 255, 1)', // Púrpura
-                        borderWidth: 2,
-                        showLine: false,
-                        fill: false,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                        pointBackgroundColor: 'rgba(153, 102, 255, 1)',
-                        pointHoverBackgroundColor: 'rgba(153, 102, 255, 1)',
-                        pointHoverBorderColor: 'rgba(153, 102, 255, 1)',
-                        pointHoverBorderWidth: 2,
-                        pointStyle: 'circle'
-                    },
-                    {
-                        label: 'Octante 5',
-                        data: [],
-                        borderColor: 'rgba(255, 206, 86, 1)', // Amarillo
-                        borderWidth: 2,
-                        showLine: false,
-                        fill: false,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                        pointBackgroundColor: 'rgba(255, 206, 86, 1)',
-                        pointHoverBackgroundColor: 'rgba(255, 206, 86, 1)',
-                        pointHoverBorderColor: 'rgba(255, 206, 86, 1)',
-                        pointHoverBorderWidth: 2,
-                        pointStyle: 'circle'
-                    },
-                    {
-                        label: 'Octante 6',
-                        data: [],
-                        borderColor: 'rgba(255, 159, 64, 1)', // Naranja
-                        borderWidth: 2,
-                        showLine: false,
-                        fill: false,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                        pointBackgroundColor: 'rgba(255, 159, 64, 1)',
-                        pointHoverBackgroundColor: 'rgba(255, 159, 64, 1)',
-                        pointHoverBorderColor: 'rgba(255, 159, 64, 1)',
-                        pointHoverBorderWidth: 2,
-                        pointStyle: 'circle'
-                    },
-                    {
-                        label: 'Octante 7',
-                        data: [],
-                        borderColor: 'rgba(255, 0, 0, 1)', // Rojo
-                        borderWidth: 2,
-                        showLine: false,
-                        fill: false,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                        pointBackgroundColor: 'rgba(255, 0, 0, 1)',
-                        pointHoverBackgroundColor: 'rgba(255, 0, 0, 1)',
-                        pointHoverBorderColor: 'rgba(255, 0, 0, 1)',
-                        pointHoverBorderWidth: 2,
-                        pointStyle: 'circle'
-                    },
-                    {
-                        label: 'Octante 8',
-                        data: [],
-                        borderColor: 'rgba(75, 192, 192, 1)', // Teal
-                        borderWidth: 2,
-                        showLine: false,
-                        fill: false,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                        pointBackgroundColor: 'rgba(75, 192, 192, 1)',
-                        pointHoverBackgroundColor: 'rgba(75, 192, 192, 1)',
-                        pointHoverBorderColor: 'rgba(75, 192, 192, 1)',
-                        pointHoverBorderWidth: 2,
-                        pointStyle: 'circle'
-                    },
-                    {
                         label: 'Relleno',
-                        data: [],
+                        data: puntosRelleno.map(p => ({ x: p[0], y: p[1] })),
                         borderColor: 'rgba(0, 206, 41, 0.505)', // Verde
                         borderWidth: 1,
                         showLine: false,
@@ -278,110 +173,31 @@ document.getElementById('formulario').addEventListener('submit', function(event)
                 animation: {
                     duration: 0 // Desactivar la animación predeterminada
                 },
-                aspectRatio: 1 // Mantener la proporción 1:1 para evitar el efecto de elipse
+                aspectRatio: Rx / Ry // Ajustar la proporción para que la elipse se vea correctamente
             }
         });
 
-        // Animar el dibujo del círculo octante por octante
-        const drawOctant = (octantIndex) => {
-            const points = octantes[octantIndex];
-            let pointIndex = 0;
-            const drawNextPoint = () => {
-                if (pointIndex < points.length) {
-                    window.myChart.data.datasets[octantIndex].data.push({ x: points[pointIndex][0], y: points[pointIndex][1] });
-                    window.myChart.update();
-                    pointIndex++;
-                    setTimeout(drawNextPoint, 5); // Añadir un retraso de 100ms entre cada punto
-                } else if (octantIndex < 7) {
-                    drawOctant(octantIndex + 1);
-                } else {
-                    // Animar el dibujo del relleno del círculo punto por punto
-                    let fillIndex = 0;
-                    const drawNextFillPoint = () => {
-                        if (fillIndex < puntosRelleno.length) {
-                            window.myChart.data.datasets[8].data.push({ x: puntosRelleno[fillIndex][0], y: puntosRelleno[fillIndex][1] });
-                            window.myChart.update();
-                            fillIndex++;
-                            setTimeout(drawNextFillPoint, 1); // Añadir un retraso de 100ms entre cada punto
-                        }
-                    };
-                    drawNextFillPoint();
-                }
-            };
-            drawNextPoint();
-        };
+        // Llenar tabla de la Región 1
+        const tablaRegion1 = document.getElementById('tabla-region-1').getElementsByTagName('tbody')[0];
+        tablaRegion1.innerHTML = '';
+        region1.forEach((punto, index) => {
+            const row = tablaRegion1.insertRow();
+            row.insertCell(0).innerText = index;
+            row.insertCell(1).innerText = punto[2];
+            row.insertCell(2).innerText = punto[0];
+            row.insertCell(3).innerText = punto[1];
+        });
 
-        drawOctant(0);
-
-        const octantHeaders = [
-            ["N", "Pk", "Xk+1", "Yk-1"],
-            ["Y", "X"],
-            ["X", "-Y"],
-            ["-Y", "X"],
-            ["-Y", "-X"],
-            ["-X", "-Y"],
-            ["-X", "Y"],
-            ["Y", "-X"]
-        ];
-
-        for (let i = 0; i < 8; i++) {
-            const thead = document.getElementById(`tabla-octante-${i + 1}`).getElementsByTagName('thead')[0];
-            const tbody = document.getElementById(`tabla-octante-${i + 1}`).getElementsByTagName('tbody')[0];
-            thead.innerHTML = '';
-            tbody.innerHTML = '';
-
-            const headerRow = thead.insertRow();
-            octantHeaders[i].forEach(header => {
-                const th = document.createElement('th');
-                th.textContent = header;
-                headerRow.appendChild(th);
-            });
-
-            puntos.forEach((punto, index) => {
-                // Filtrar puntos con valores .5
-                if (punto[0] % 1 !== 0 || punto[1] % 1 !== 0) {
-                    return;
-                }
-
-                const row = tbody.insertRow();
-                row.style.animation = 'fadeIn 0.5s ease-in-out';
-                if (i === 0) {
-                    const cellIteracion = row.insertCell(0);
-                    const cellPk = row.insertCell(1);
-                    const cellX = row.insertCell(2);
-                    const cellY = row.insertCell(3);
-                    cellIteracion.textContent = index;
-                    cellPk.textContent = punto[2];
-                    cellX.textContent = punto[0] + 1;
-                    cellY.textContent = punto[1];
-                } else {
-                    const cellX = row.insertCell(0);
-                    const cellY = row.insertCell(1);
-                    if (i === 1) {
-                        cellX.textContent = punto[1];
-                        cellY.textContent = punto[0];
-                    } else if (i === 2) {
-                        cellX.textContent = punto[0];
-                        cellY.textContent = -punto[1];
-                    } else if (i === 3) {
-                        cellX.textContent = -punto[1];
-                        cellY.textContent = punto[0];
-                    } else if (i === 4) {
-                        cellX.textContent = -punto[1];
-                        cellY.textContent = -punto[0];
-                    } else if (i === 5) {
-                        cellX.textContent = -punto[0];
-                        cellY.textContent = -punto[1];
-                    } else if (i === 6) {
-                        cellX.textContent = -punto[0];
-                        cellY.textContent = punto[1];
-                    } else if (i === 7) {
-                        cellX.textContent = punto[1];
-                        cellY.textContent = -punto[0];
-                    }
-                }
-            });
-        }
+        // Llenar tabla de la Región 2
+        const tablaRegion2 = document.getElementById('tabla-region-2').getElementsByTagName('tbody')[0];
+        tablaRegion2.innerHTML = '';
+        region2.forEach((punto, index) => {
+            const row = tablaRegion2.insertRow();
+            row.insertCell(0).innerText = index;
+            row.insertCell(1).innerText = punto[2];
+            row.insertCell(2).innerText = punto[0];
+            row.insertCell(3).innerText = punto[1];
+        });
     })
     .catch(error => {
         console.error('Error:', error);
